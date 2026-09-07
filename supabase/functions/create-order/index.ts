@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getOlseraHeaders, isOlseraConfigured } from "../_shared/olsera.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -214,37 +215,36 @@ Deno.serve(async (req: Request) => {
     });
 
     // Push to Olsera POS (best-effort, don't fail the order if Olsera is down)
-    const olseraBaseUrl = Deno.env.get("OLSSERA_API_BASE_URL");
-    const olseraToken = Deno.env.get("OLSSERA_API_TOKEN");
-    if (olseraBaseUrl && olseraToken) {
+    if (isOlseraConfigured()) {
       try {
-        const olseraPayload = {
-          table_name,
-          items: validatedItems.map((i) => ({
-            product_id: i.product_id,
-            name: i.name,
-            variant: i.variant,
-            quantity: i.quantity,
-            price: i.price,
-          })),
-          total: finalGrandTotal,
-          payment_method,
-        };
-        const olseraResp = await fetch(`${olseraBaseUrl}/orders`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${olseraToken}`,
-          },
-          body: JSON.stringify(olseraPayload),
-        });
-        if (olseraResp.ok) {
-          const olseraData = await olseraResp.json();
-          if (olseraData.id) {
-            await supabase
-              .from("orders")
-              .update({ olsera_order_id: String(olseraData.id) })
-              .eq("id", order.id);
+        const olseraHeaders = await getOlseraHeaders();
+        if (olseraHeaders) {
+          const olseraPayload = {
+            table_name,
+            items: validatedItems.map((i) => ({
+              product_id: i.product_id,
+              name: i.name,
+              variant: i.variant,
+              quantity: i.quantity,
+              price: i.price,
+            })),
+            total: finalGrandTotal,
+            payment_method,
+          };
+          const olseraResp = await fetch("https://api-open.olsera.co.id/open-api/v1/order", {
+            method: "POST",
+            headers: olseraHeaders,
+            body: JSON.stringify(olseraPayload),
+          });
+          if (olseraResp.ok) {
+            const olseraData = await olseraResp.json();
+            const olseraOrderId = olseraData.id || olseraData.data?.id || olseraData.order_id;
+            if (olseraOrderId) {
+              await supabase
+                .from("orders")
+                .update({ olsera_order_id: String(olseraOrderId) })
+                .eq("id", order.id);
+            }
           }
         }
       } catch {

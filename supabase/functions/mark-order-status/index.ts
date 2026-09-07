@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getOlseraHeaders, isOlseraConfigured } from "../_shared/olsera.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -193,24 +194,22 @@ Deno.serve(async (req: Request) => {
           .eq("id", order_id);
 
         // Push customer update to Olsera (best-effort)
-        const olseraBaseUrl = Deno.env.get("OLSSERA_API_BASE_URL");
-        const olseraToken = Deno.env.get("OLSSERA_API_TOKEN");
-        if (olseraBaseUrl && olseraToken) {
+        if (isOlseraConfigured()) {
           try {
-            await fetch(`${olseraBaseUrl}/customers/${order.member_id}`, {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${olseraToken}`,
-              },
-              body: JSON.stringify({
-                name: member.name,
-                phone: member.phone,
-                email: member.email,
-                tier: tierChanged ? newTier : member.tier,
-                points: newPoints,
-              }),
-            });
+            const olseraHeaders = await getOlseraHeaders();
+            if (olseraHeaders) {
+              await fetch(`https://api-open.olsera.co.id/open-api/v1/customer/${order.member_id}`, {
+                method: "PUT",
+                headers: olseraHeaders,
+                body: JSON.stringify({
+                  name: member.name,
+                  phone: member.phone,
+                  email: member.email,
+                  tier: tierChanged ? newTier : member.tier,
+                  points: newPoints,
+                }),
+              });
+            }
           } catch {
             // Best-effort
           }

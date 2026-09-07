@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getOlseraHeaders, isOlseraConfigured } from "../_shared/olsera.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -26,36 +27,35 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const olseraBaseUrl = Deno.env.get("OLSSERA_API_BASE_URL");
-    const olseraToken = Deno.env.get("OLSSERA_API_TOKEN");
-
-    if (!olseraBaseUrl || !olseraToken) {
+    if (!isOlseraConfigured()) {
       return new Response(JSON.stringify({ success: false, message: "Olsera API not configured" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const payload = { name, phone, email, tier, points };
+    const olseraHeaders = await getOlseraHeaders();
+    if (!olseraHeaders) {
+      return new Response(JSON.stringify({ success: false, message: "Failed to obtain Olsera access token" }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const payload = { name, phone, email, tier, points, external_id: member_id };
 
     // Try PUT first (update existing), fall back to POST (create new)
-    const putResp = await fetch(`${olseraBaseUrl}/customers/${member_id}`, {
+    const putResp = await fetch(`https://api-open.olsera.co.id/open-api/v1/customer/${member_id}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${olseraToken}`,
-      },
+      headers: olseraHeaders,
       body: JSON.stringify(payload),
     });
 
     if (putResp.status === 404) {
-      const postResp = await fetch(`${olseraBaseUrl}/customers`, {
+      const postResp = await fetch("https://api-open.olsera.co.id/open-api/v1/customer", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${olseraToken}`,
-        },
-        body: JSON.stringify({ ...payload, external_id: member_id }),
+        headers: olseraHeaders,
+        body: JSON.stringify(payload),
       });
 
       if (!postResp.ok) {

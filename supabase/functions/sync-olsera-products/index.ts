@@ -1,10 +1,13 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { getOlseraHeaders, isOlseraConfigured } from "../_shared/olsera.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
+
+const OLSERA_API_BASE = "https://api-open.olsera.co.id";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -49,33 +52,36 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const olseraBaseUrl = Deno.env.get("OLSSERA_API_BASE_URL");
-    const olseraToken = Deno.env.get("OLSSERA_API_TOKEN");
-    const olseraMerchantId = Deno.env.get("OLSSERA_MERCHANT_ID");
-
-    if (!olseraBaseUrl || !olseraToken) {
-      return new Response(JSON.stringify({ error: "Olsera API not configured" }), {
+    if (!isOlseraConfigured()) {
+      return new Response(JSON.stringify({ error: "Olsera API not configured. Set OLSSERA_APP_ID and OLSSERA_SECRET_KEY secrets." }), {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // Fetch products from Olsera
-    const resp = await fetch(`${olseraBaseUrl}/products`, {
-      headers: {
-        "Authorization": `Bearer ${olseraToken}`,
-        "X-Merchant-ID": olseraMerchantId || "",
-      },
-    });
-
-    if (!resp.ok) {
-      return new Response(JSON.stringify({ error: `Olsera API error: ${resp.status}` }), {
+    const olseraHeaders = await getOlseraHeaders();
+    if (!olseraHeaders) {
+      return new Response(JSON.stringify({ error: "Failed to obtain Olsera access token. Check your app_id and secret_key." }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const olseraProducts = await resp.json();
+    // Fetch products from Olsera
+    const resp = await fetch(`${OLSERA_API_BASE}/open-api/v1/product/list`, {
+      headers: olseraHeaders,
+    });
+
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      return new Response(JSON.stringify({ error: `Olsera API error: ${resp.status}`, detail: errBody }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const olseraData = await resp.json();
+    const olseraProducts = olseraData.data || olseraData.products || olseraData || [];
 
     // Map and upsert into products table
     let synced = 0;
@@ -85,9 +91,9 @@ Deno.serve(async (req: Request) => {
         category: op.category || op.category_name || "Uncategorized",
         variant_label: op.variant_label || "Variant",
         variant_names: op.variants || op.variant_names || ["Regular"],
-        pos_sell_price: op.price || op.sell_price || 0,
+        pos_sell_price: op.price || op.sell_price || op.pos_sell_price || 0,
         pos_hidden: false,
-        olsera_id: String(op.id || op.product_id),
+        olsera_id: String(op.id || op.product_id || op.olsera_id),
         updated_at: new Date().toISOString(),
       };
 
