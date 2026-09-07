@@ -18,7 +18,7 @@ export function MenuPage() {
   const [hoursPopup, setHoursPopup] = useState(false);
   const [tableParam, setTableParam] = useState('Takeaway');
   const { addItem, count, setProducts: setCartProducts, setPromoPrograms, pendingVariantSelection, resolveVariantSelection, cancelVariantSelection } = useCart();
-  const { member, isAdmin, signOut } = useAuth();
+  const { member, isAdmin, isStaff, signOut } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -95,7 +95,7 @@ export function MenuPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            {member ? (
+            {member || isAdmin || isStaff ? (
               <div className="flex items-center gap-2">
                 {isAdmin && (
                   <button
@@ -106,18 +106,22 @@ export function MenuPage() {
                     <span className="hidden sm:inline">Admin Panel</span>
                   </button>
                 )}
-                <button
-                  onClick={() => navigate('/staff')}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  <span className="hidden sm:inline">Staff</span>
-                </button>
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cream-200">
-                  <User className="w-4 h-4 text-espresso-400" />
-                  <span className="text-sm text-espresso-600">{member.name}</span>
-                  <span className="badge bg-sage-100 text-sage-600">{member.tier}</span>
-                </div>
+                {(isAdmin || isStaff) && (
+                  <button
+                    onClick={() => navigate('/staff')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4" />
+                    <span className="hidden sm:inline">Staff</span>
+                  </button>
+                )}
+                {member && (
+                  <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cream-200">
+                    <User className="w-4 h-4 text-espresso-400" />
+                    <span className="text-sm text-espresso-600">{member.name}</span>
+                    <span className="badge bg-sage-100 text-sage-600">{member.tier}</span>
+                  </div>
+                )}
                 <button onClick={signOut} className="p-2 rounded-xl hover:bg-cream-200 transition-colors">
                   <LogOut className="w-5 h-5 text-espresso-400" />
                 </button>

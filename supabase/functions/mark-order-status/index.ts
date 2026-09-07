@@ -76,6 +76,37 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    // Verify the user is authorized to update this order
+    if (changed_by) {
+      const { data: admin } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", changed_by)
+        .maybeSingle();
+
+      if (!admin) {
+        const { data: staff } = await supabase
+          .from("staff")
+          .select("assigned_location")
+          .eq("user_id", changed_by)
+          .maybeSingle();
+
+        if (!staff) {
+          return new Response(JSON.stringify({ error: "You are not authorized to update orders" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        if (!order.table_name.startsWith(staff.assigned_location)) {
+          return new Response(JSON.stringify({ error: "You can only manage orders from your assigned location" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+    }
+
     // Update order status
     const { error: updateError } = await supabase
       .from("orders")

@@ -1,20 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import type { Order } from '@/lib/types';
 import { formatRupiah, formatTimeElapsed } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
-import { useSearchParams } from 'react-router-dom';
-import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader2, Coffee } from 'lucide-react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ArrowLeft, ShieldCheck } from 'lucide-react';
 
-const LOCATIONS = ['All', 'Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
+const ALL_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
 const FILTER_TABS = ['All', 'Incoming', 'Served', 'Cancelled'] as const;
 
 export function StaffDashboard() {
-  const { session, signOut } = useAuth();
+  const { session, signOut, isAdmin, staff } = useAuth();
   const { addToast } = useToast();
   const [params] = useSearchParams();
+  const navigate = useNavigate();
 
   const [orders, setOrders] = useState<Map<string, Order>>(new Map());
   const [location, setLocation] = useState('All');
@@ -28,7 +29,20 @@ export function StaffDashboard() {
   const focusOrderId = params.get('orderId');
   const prevOrderIds = useRef<Set<string>>(new Set());
 
-  // Audio chime
+  const availableLocations = useMemo(() => {
+    if (isAdmin) return ['All', ...ALL_LOCATIONS];
+    if (staff) return [staff.assigned_location];
+    return ALL_LOCATIONS;
+  }, [isAdmin, staff]);
+
+  useEffect(() => {
+    if (staff && !isAdmin) {
+      setLocation(staff.assigned_location);
+    } else if (isAdmin) {
+      setLocation('All');
+    }
+  }, [staff, isAdmin]);
+
   useEffect(() => {
     audioRef.current = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
     audioRef.current.volume = 0.5;
@@ -40,15 +54,13 @@ export function StaffDashboard() {
     }
   }, [audioEnabled]);
 
-  // Fetch orders
   const fetchOrders = useCallback(async () => {
-    const query = supabase
+    const { data, error } = await supabase
       .from('orders')
       .select('*')
       .eq('date', selectedDate)
       .order('created_at', { ascending: false });
 
-    const { data, error } = await query;
     if (error) {
       addToast('Failed to load orders', 'error');
       return;
@@ -56,7 +68,6 @@ export function StaffDashboard() {
     const newMap = new Map<string, Order>();
     (data || []).forEach(o => newMap.set(o.id, o as unknown as Order));
 
-    // Detect new orders for chime
     const newIds = new Set(newMap.keys());
     const hasNew = Array.from(newIds).some(id => !prevOrderIds.current.has(id));
     if (hasNew && prevOrderIds.current.size > 0) {
@@ -72,7 +83,6 @@ export function StaffDashboard() {
     fetchOrders();
   }, [fetchOrders]);
 
-  // Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel('orders-changes')
@@ -84,7 +94,6 @@ export function StaffDashboard() {
           } else {
             const newOrder = payload.new as unknown as Order;
             if (newOrder.date === selectedDate) {
-              // Check if this is a new order
               if (!prev.has(newOrder.id) && prev.size > 0) {
                 playChime();
               }
@@ -103,7 +112,6 @@ export function StaffDashboard() {
     };
   }, [selectedDate, playChime]);
 
-  // Repeating chime for pending orders
   useEffect(() => {
     if (chimeIntervalRef.current) {
       clearInterval(chimeIntervalRef.current);
@@ -129,7 +137,6 @@ export function StaffDashboard() {
     };
   }, [orders, audioEnabled, dismissedOrders, playChime]);
 
-  // Stop chime for focused order
   useEffect(() => {
     if (focusOrderId) {
       setDismissedOrders(prev => new Set(prev).add(focusOrderId));
@@ -165,7 +172,6 @@ export function StaffDashboard() {
     }
   };
 
-  // Filter orders
   const filteredOrders = Array.from(orders.values()).filter(o => {
     if (location !== 'All' && !o.table_name.startsWith(location)) return false;
     if (filterTab === 'Incoming') return o.status === 'pending' || o.status === 'preparing';
@@ -176,14 +182,32 @@ export function StaffDashboard() {
 
   return (
     <div className="min-h-screen bg-cream-50">
-      {/* Header */}
       <header className="sticky top-0 z-40 bg-espresso-600 text-cream-100 border-b border-espresso-700">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Coffee className="w-6 h-6" />
-            <h1 className="font-display font-bold text-lg">Staff Dashboard</h1>
+            <div>
+              <h1 className="font-display font-bold text-lg leading-none">Staff Dashboard</h1>
+              {staff && !isAdmin && (
+                <p className="text-xs text-cream-200 mt-0.5">Assigned: {staff.assigned_location}</p>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors text-sm font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" /> Menu
+            </button>
+            {isAdmin && (
+              <button
+                onClick={() => navigate('/admin')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors text-sm font-medium"
+              >
+                <ShieldCheck className="w-4 h-4" /> Admin
+              </button>
+            )}
             <button
               onClick={() => setAudioEnabled(!audioEnabled)}
               className="p-2 rounded-lg hover:bg-espresso-700 transition-colors"
@@ -197,26 +221,25 @@ export function StaffDashboard() {
           </div>
         </div>
 
-        {/* Controls */}
         <div className="max-w-7xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-3">
-          {/* Location filter */}
-          <div className="flex gap-1.5 flex-wrap">
-            {LOCATIONS.map(loc => (
-              <button
-                key={loc}
-                onClick={() => setLocation(loc)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                  location === loc
-                    ? 'bg-cream-100 text-espresso-600'
-                    : 'bg-espresso-700 text-cream-200 hover:bg-espresso-800'
-                }`}
-              >
-                {loc}
-              </button>
-            ))}
-          </div>
+          {availableLocations.length > 1 && (
+            <div className="flex gap-1.5 flex-wrap">
+              {availableLocations.map(loc => (
+                <button
+                  key={loc}
+                  onClick={() => setLocation(loc)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    location === loc
+                      ? 'bg-cream-100 text-espresso-600'
+                      : 'bg-espresso-700 text-cream-200 hover:bg-espresso-800'
+                  }`}
+                >
+                  {loc}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* Date picker */}
           <div className="flex items-center gap-1.5 bg-espresso-700 rounded-lg px-3 py-1.5">
             <Calendar className="w-4 h-4 text-cream-200" />
             <input
@@ -227,7 +250,6 @@ export function StaffDashboard() {
             />
           </div>
 
-          {/* Filter tabs */}
           <div className="flex gap-1.5">
             {FILTER_TABS.map(tab => (
               <button
@@ -246,7 +268,6 @@ export function StaffDashboard() {
         </div>
       </header>
 
-      {/* Orders grid */}
       <main className="max-w-7xl mx-auto px-4 py-4">
         {loading ? (
           <div className="flex items-center justify-center py-16">
@@ -289,7 +310,6 @@ function OrderCard({ order, onStatusChange, isNew }: { order: Order; onStatusCha
 
   return (
     <div className={`card p-4 ${isNew ? 'animate-pulse-highlight ring-2 ring-amber-300' : ''}`}>
-      {/* Header */}
       <div className="flex items-start justify-between mb-2">
         <div>
           <p className="font-display font-bold text-espresso-600">{order.table_name}</p>
@@ -303,7 +323,6 @@ function OrderCard({ order, onStatusChange, isNew }: { order: Order; onStatusCha
         </div>
       </div>
 
-      {/* Items */}
       <div className="space-y-1 mb-3 py-2 border-y border-cream-200">
         {(order.items as unknown as Array<{ quantity: number; name: string; variant: string; is_promo: boolean }>).map((item, i) => (
           <div key={i} className="flex justify-between text-sm">
@@ -316,7 +335,6 @@ function OrderCard({ order, onStatusChange, isNew }: { order: Order; onStatusCha
         ))}
       </div>
 
-      {/* Total + payment */}
       <div className="flex justify-between items-center mb-3">
         <span className="text-sm text-espresso-400">
           {order.payment_method === 'qris' ? 'QRIS' : 'Cash'}
@@ -324,7 +342,6 @@ function OrderCard({ order, onStatusChange, isNew }: { order: Order; onStatusCha
         <span className="font-bold text-espresso-600">{formatRupiah(order.grand_total)}</span>
       </div>
 
-      {/* Contact */}
       {order.phone && (
         <div className="flex gap-2 mb-3">
           {telLink && (
@@ -340,14 +357,12 @@ function OrderCard({ order, onStatusChange, isNew }: { order: Order; onStatusCha
         </div>
       )}
 
-      {/* Proof link */}
       {order.proof_url && (
         <a href={order.proof_url} target="_blank" rel="noopener noreferrer" className="block text-center text-sm text-sage-500 hover:underline mb-3">
           View payment proof
         </a>
       )}
 
-      {/* Status actions */}
       {order.status === 'pending' && (
         <div className="grid grid-cols-2 gap-2">
           <button

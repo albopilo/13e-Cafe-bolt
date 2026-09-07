@@ -11,7 +11,7 @@ import { StaffDashboard } from '@/pages/staff/StaffDashboard';
 import { AdminPanel } from '@/pages/admin/AdminPanel';
 import type { ReactNode } from 'react';
 
-function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requireAdmin?: boolean }) {
+function AdminRoute({ children }: { children: ReactNode }) {
   const { session, isAdmin, loading } = useAuth();
   const location = useLocation();
 
@@ -27,7 +27,7 @@ function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requi
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
-  if (requireAdmin && !isAdmin) {
+  if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
 
@@ -35,7 +35,7 @@ function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requi
 }
 
 function StaffRoute({ children }: { children: ReactNode }) {
-  const { session, isAdmin, loading } = useAuth();
+  const { session, isAdmin, isStaff, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -50,12 +50,10 @@ function StaffRoute({ children }: { children: ReactNode }) {
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
-  // Admins can also access staff dashboard
-  if (isAdmin) {
-    return <>{children}</>;
+  if (!isAdmin && !isStaff) {
+    return <Navigate to="/" replace />;
   }
 
-  // Non-admin authenticated users are treated as staff
   return <>{children}</>;
 }
 
@@ -73,9 +71,9 @@ function AppRoutes() {
         </StaffRoute>
       } />
       <Route path="/admin" element={
-        <ProtectedRoute requireAdmin>
+        <AdminRoute>
           <AdminPanel />
-        </ProtectedRoute>
+        </AdminRoute>
       } />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

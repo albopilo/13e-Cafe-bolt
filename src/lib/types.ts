@@ -135,6 +135,14 @@ export interface StaffPushToken {
   created_at: string;
 }
 
+export type UserRole = 'member' | 'staff' | 'admin';
+
+export interface StaffProfile {
+  user_id: string;
+  assigned_location: string;
+  created_at: string;
+}
+
 export interface CartItem {
   product_id: string;
   name: string;

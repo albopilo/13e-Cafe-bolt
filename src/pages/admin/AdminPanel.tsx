@@ -2,16 +2,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import type { Product, Member, Voucher, MarketingProgram } from '@/lib/types';
+import type { Product, Member, Voucher, MarketingProgram, StaffProfile } from '@/lib/types';
 import { CATEGORY_ORDER, normalizeGoogleDriveUrl } from '@/lib/categories';
 import { formatRupiah } from '@/lib/format';
-import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee } from 'lucide-react';
+import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-type Tab = 'products' | 'promos' | 'vouchers' | 'members';
+type Tab = 'products' | 'promos' | 'vouchers' | 'members' | 'staff';
 
 export function AdminPanel() {
   const [tab, setTab] = useState<Tab>('products');
   const { signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-cream-50">
@@ -21,9 +23,23 @@ export function AdminPanel() {
             <Coffee className="w-6 h-6" />
             <h1 className="font-display font-bold text-lg">Admin Panel</h1>
           </div>
-          <button onClick={signOut} className="text-sm px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors">
-            Logout
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors text-sm font-medium"
+            >
+              <ArrowLeft className="w-4 h-4" /> Menu
+            </button>
+            <button
+              onClick={() => navigate('/staff')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors text-sm font-medium"
+            >
+              <LayoutDashboard className="w-4 h-4" /> Staff
+            </button>
+            <button onClick={signOut} className="text-sm px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors">
+              Logout
+            </button>
+          </div>
         </div>
         <div className="max-w-6xl mx-auto px-4 pb-3 flex gap-1.5">
           {([
@@ -31,6 +47,7 @@ export function AdminPanel() {
             { id: 'promos', label: 'Promos', icon: Gift },
             { id: 'vouchers', label: 'Vouchers', icon: Tag },
             { id: 'members', label: 'Members', icon: Users },
+            { id: 'staff', label: 'Staff', icon: UserCog },
           ] as const).map(t => (
             <button
               key={t.id}
@@ -51,6 +68,7 @@ export function AdminPanel() {
         {tab === 'promos' && <PromosTab />}
         {tab === 'vouchers' && <VouchersTab />}
         {tab === 'members' && <MembersTab />}
+        {tab === 'staff' && <StaffTab />}
       </main>
     </div>
   );
@@ -702,6 +720,169 @@ function MembersTab() {
           </table>
         </div>
       )}
+    </div>
+  );
+}
+
+const STAFF_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
+
+function StaffTab() {
+  const { addToast } = useToast();
+  const [staffList, setStaffList] = useState<StaffProfile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+
+  const fetch = useCallback(async () => {
+    const { data, error } = await supabase.from('staff').select('*').order('created_at', { ascending: false });
+    if (error) {
+      addToast('Failed to load staff', 'error');
+      return;
+    }
+    setStaffList(data || []);
+    setLoading(false);
+  }, [addToast]);
+
+  useEffect(() => { fetch(); }, [fetch]);
+
+  const handleDelete = async (userId: string) => {
+    if (!confirm('Remove this staff member?')) return;
+    const { error } = await supabase.from('staff').delete().eq('user_id', userId);
+    if (error) {
+      addToast('Failed to remove staff', 'error');
+    } else {
+      addToast('Staff member removed', 'success');
+      fetch();
+    }
+  };
+
+  const handleUpdateLocation = async (userId: string, newLocation: string) => {
+    const { error } = await supabase.from('staff').update({ assigned_location: newLocation }).eq('user_id', userId);
+    if (error) {
+      addToast('Failed to update location', 'error');
+    } else {
+      addToast('Location updated', 'success');
+      fetch();
+    }
+  };
+
+  if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-espresso-300" /></div>;
+
+  return (
+    <div className="space-y-4">
+      <button onClick={() => setShowForm(true)} className="btn-primary text-sm py-2.5 flex items-center gap-1.5">
+        <Plus className="w-4 h-4" /> Add Staff
+      </button>
+
+      {staffList.length === 0 ? (
+        <div className="text-center py-8 text-espresso-300"><p>No staff assigned yet.</p></div>
+      ) : (
+        <div className="card overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-cream-200 text-espresso-500">
+              <tr>
+                <th className="text-left p-3 font-medium">User ID</th>
+                <th className="text-left p-3 font-medium">Assigned Location</th>
+                <th className="text-right p-3 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {staffList.map(s => (
+                <tr key={s.user_id} className="border-t border-cream-200 hover:bg-cream-50">
+                  <td className="p-3 text-espresso-600 font-mono text-xs">{s.user_id.slice(0, 8)}...</td>
+                  <td className="p-3">
+                    <select
+                      value={s.assigned_location}
+                      onChange={e => handleUpdateLocation(s.user_id, e.target.value)}
+                      className="input-field text-sm py-1.5 max-w-[180px]"
+                    >
+                      {STAFF_LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                    </select>
+                  </td>
+                  <td className="p-3 text-right">
+                    <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
+                      <Trash2 className="w-3.5 h-3.5 text-rust-500" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showForm && <StaffForm onClose={() => setShowForm(false)} onSaved={() => { fetch(); setShowForm(false); }} />}
+    </div>
+  );
+}
+
+function StaffForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
+  const { addToast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [location, setLocation] = useState(STAFF_LOCATIONS[0]);
+  const [saving, setSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (!email.trim() || !password) {
+      addToast('Email and password are required', 'error');
+      return;
+    }
+    if (password.length < 6) {
+      addToast('Password must be at least 6 characters', 'error');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+      });
+      if (authError) throw new Error(authError.message);
+      if (!authData.user) throw new Error('Failed to create account');
+
+      const { error: staffError } = await supabase.from('staff').insert({
+        user_id: authData.user.id,
+        assigned_location: location,
+      });
+      if (staffError) throw new Error(staffError.message);
+
+      addToast('Staff account created', 'success');
+      onSaved();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Failed to create staff account', 'error');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-espresso-900/50 flex items-center justify-center p-4 animate-fade-in" onClick={onClose}>
+      <div className="bg-cream-100 rounded-2xl p-6 max-w-md w-full animate-slide-up" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-display font-bold text-espresso-600">New Staff Account</h3>
+          <button onClick={onClose} className="p-1 hover:bg-cream-200 rounded-lg"><X className="w-5 h-5 text-espresso-400" /></button>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">Email</label>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="input-field text-sm py-2.5" placeholder="staff@email.com" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">Password</label>
+            <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="input-field text-sm py-2.5" placeholder="Min 6 characters" />
+          </div>
+          <div>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">Assigned Location</label>
+            <select value={location} onChange={e => setLocation(e.target.value)} className="input-field text-sm py-2.5">
+              {STAFF_LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+            </select>
+          </div>
+        </div>
+        <button onClick={handleSave} disabled={saving} className="btn-primary w-full mt-4 flex items-center justify-center gap-2">
+          {saving && <Loader2 className="w-5 h-5 animate-spin" />}
+          {saving ? 'Creating...' : 'Create Staff Account'}
+        </button>
+      </div>
     </div>
   );
 }

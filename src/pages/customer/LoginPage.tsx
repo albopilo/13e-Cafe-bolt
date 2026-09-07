@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
-import { Coffee, Loader2, Mail, Lock } from 'lucide-react';
+import { Coffee, Loader as Loader2, Mail, Lock } from 'lucide-react';
 
 export function LoginPage() {
   const { signIn } = useAuth();
@@ -83,10 +83,6 @@ export function LoginPage() {
           <div className="flex justify-between text-sm">
             <Link to="/register" className="text-sage-500 font-medium hover:underline">Create account</Link>
             <Link to="/" className="text-espresso-300 hover:underline">Browse menu</Link>
-          </div>
-          <div className="flex gap-3 pt-2 border-t border-cream-200">
-            <Link to="/login?redirect=/staff" className="flex-1 text-center text-sm text-espresso-400 hover:text-espresso-600 py-2 rounded-lg hover:bg-cream-200 transition-colors">Staff Dashboard</Link>
-            <Link to="/login?redirect=/admin" className="flex-1 text-center text-sm text-espresso-400 hover:text-espresso-600 py-2 rounded-lg hover:bg-cream-200 transition-colors">Admin Panel</Link>
           </div>
         </form>
       </div>

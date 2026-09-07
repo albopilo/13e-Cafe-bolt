@@ -1,13 +1,16 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import type { Member } from '@/lib/types';
+import type { Member, StaffProfile, UserRole } from '@/lib/types';
 
 interface AuthContextValue {
   session: Session | null;
   user: User | null;
   member: Member | null;
+  staff: StaffProfile | null;
   isAdmin: boolean;
+  isStaff: boolean;
+  role: UserRole;
   loading: boolean;
   signUp: (email: string, password: string, metadata: { name: string; phone: string; birthdate: string }) => Promise<{ error: string | null }>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
@@ -20,6 +23,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [member, setMember] = useState<Member | null>(null);
+  const [staff, setStaff] = useState<StaffProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +41,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .eq('user_id', userId)
       .maybeSingle();
     setIsAdmin(!!a);
+
+    const { data: s } = await supabase
+      .from('staff')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    setStaff(s as StaffProfile | null);
   };
 
   useEffect(() => {
@@ -62,6 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setMember(null);
         setIsAdmin(false);
+        setStaff(null);
         setLoading(false);
       }
     });
@@ -87,10 +99,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
     setMember(null);
     setIsAdmin(false);
+    setStaff(null);
   };
 
+  const isStaff = !!staff && !isAdmin;
+  const role: UserRole = isAdmin ? 'admin' : isStaff ? 'staff' : 'member';
+
   return (
-    <AuthContext.Provider value={{ session, user, member, isAdmin, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, user, member, staff, isAdmin, isStaff, role, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
