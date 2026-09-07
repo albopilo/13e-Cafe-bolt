@@ -23,60 +23,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  const loadProfile = async (userId: string) => {
+    const { data: m } = await supabase
+      .from('members')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    setMember(m as Member | null);
+
+    const { data: a } = await supabase
+      .from('admins')
+      .select('user_id')
+      .eq('user_id', userId)
+      .maybeSingle();
+    setIsAdmin(!!a);
+  };
+
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    supabase.auth.getSession().then(async ({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
+      if (data.session?.user) {
+        await loadProfile(data.session.user.id);
+      }
       setLoading(false);
     });
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
-      setLoading(false);
-      (async () => {
-        if (newSession?.user) {
-          const { data: m } = await supabase
-            .from('members')
-            .select('*')
-            .eq('user_id', newSession.user.id)
-            .maybeSingle();
-          setMember(m as Member | null);
 
-          const { data: a } = await supabase
-            .from('admins')
-            .select('user_id')
-            .eq('user_id', newSession.user.id)
-            .maybeSingle();
-          setIsAdmin(!!a);
-        } else {
-          setMember(null);
-          setIsAdmin(false);
-        }
-      })();
+      if (newSession?.user) {
+        setLoading(true);
+        (async () => {
+          await loadProfile(newSession.user.id);
+          setLoading(false);
+        })();
+      } else {
+        setMember(null);
+        setIsAdmin(false);
+        setLoading(false);
+      }
     });
 
     return () => listener.subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    (async () => {
-      const { data: m } = await supabase
-        .from('members')
-        .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      setMember(m as Member | null);
-
-      const { data: a } = await supabase
-        .from('admins')
-        .select('user_id')
-        .eq('user_id', user.id)
-        .maybeSingle();
-      setIsAdmin(!!a);
-    })();
-  }, [user]);
 
   const signUp = async (email: string, password: string, metadata: { name: string; phone: string; birthdate: string }) => {
     const { error } = await supabase.auth.signUp({

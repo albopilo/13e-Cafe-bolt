@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { CartProvider } from '@/context/CartContext';
@@ -13,6 +13,7 @@ import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requireAdmin?: boolean }) {
   const { session, isAdmin, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -23,7 +24,7 @@ function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requi
   }
 
   if (!session) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
   if (requireAdmin && !isAdmin) {
@@ -35,6 +36,7 @@ function ProtectedRoute({ children, requireAdmin }: { children: ReactNode; requi
 
 function StaffRoute({ children }: { children: ReactNode }) {
   const { session, isAdmin, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -45,7 +47,7 @@ function StaffRoute({ children }: { children: ReactNode }) {
   }
 
   if (!session) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
   // Admins can also access staff dashboard

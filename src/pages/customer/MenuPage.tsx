@@ -7,7 +7,7 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { ShoppingCart, Clock, Coffee, X, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
@@ -18,7 +18,7 @@ export function MenuPage() {
   const [hoursPopup, setHoursPopup] = useState(false);
   const [tableParam, setTableParam] = useState('Takeaway');
   const { addItem, count, setProducts: setCartProducts, setPromoPrograms, pendingVariantSelection, resolveVariantSelection, cancelVariantSelection } = useCart();
-  const { member, signOut } = useAuth();
+  const { member, isAdmin, signOut } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
 
@@ -97,6 +97,22 @@ export function MenuPage() {
           <div className="flex items-center gap-2">
             {member ? (
               <div className="flex items-center gap-2">
+                {isAdmin && (
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-espresso-600 text-cream-100 text-sm font-medium hover:bg-espresso-700 transition-colors"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span className="hidden sm:inline">Admin Panel</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => navigate('/staff')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  <span className="hidden sm:inline">Staff</span>
+                </button>
                 <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-cream-200">
                   <User className="w-4 h-4 text-espresso-400" />
                   <span className="text-sm text-espresso-600">{member.name}</span>

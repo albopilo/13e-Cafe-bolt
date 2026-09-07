@@ -1,13 +1,15 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { Coffee, Loader2, Mail, Lock } from 'lucide-react';
 
 export function LoginPage() {
   const { signIn } = useAuth();
   const { addToast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get('redirect') || '/';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,7 +28,7 @@ export function LoginPage() {
       addToast(error, 'error');
     } else {
       addToast('Welcome back!', 'success');
-      navigate('/');
+      navigate(redirectTo);
     }
   };
 
@@ -50,6 +52,7 @@ export function LoginPage() {
                 onChange={e => setEmail(e.target.value)}
                 className="input-field pl-10"
                 placeholder="you@email.com"
+                autoComplete="email"
                 required
               />
             </div>
@@ -64,6 +67,7 @@ export function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 className="input-field pl-10"
                 placeholder="Your password"
+                autoComplete="current-password"
                 required
               />
             </div>
@@ -79,6 +83,10 @@ export function LoginPage() {
           <div className="flex justify-between text-sm">
             <Link to="/register" className="text-sage-500 font-medium hover:underline">Create account</Link>
             <Link to="/" className="text-espresso-300 hover:underline">Browse menu</Link>
+          </div>
+          <div className="flex gap-3 pt-2 border-t border-cream-200">
+            <Link to="/login?redirect=/staff" className="flex-1 text-center text-sm text-espresso-400 hover:text-espresso-600 py-2 rounded-lg hover:bg-cream-200 transition-colors">Staff Dashboard</Link>
+            <Link to="/login?redirect=/admin" className="flex-1 text-center text-sm text-espresso-400 hover:text-espresso-600 py-2 rounded-lg hover:bg-cream-200 transition-colors">Admin Panel</Link>
           </div>
         </form>
       </div>
