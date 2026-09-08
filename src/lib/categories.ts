@@ -10,19 +10,25 @@ export const CATEGORY_ORDER = [
   'Coffee',
   'Non coffee',
   'Tea & Juices',
+  'makanan',
+  'minuman',
+  'paket',
 ] as const;
 
 export const QRIS_ONLY_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3'];
 
-export const DELIVERY_FEE = 5000;
+export const DELIVERY_FEES: Record<string, number> = {
+  'Mille 1': 10000,
+  'Mille 3': 12000,
+};
 
 export function isQrisOnly(tableName: string): boolean {
   return QRIS_ONLY_LOCATIONS.some(loc => tableName.startsWith(loc));
 }
 
 export function getDeliveryFee(tableName: string): number {
-  if (tableName.startsWith('Mille 1') || tableName.startsWith('Mille 3')) {
-    return DELIVERY_FEE;
+  for (const [loc, fee] of Object.entries(DELIVERY_FEES)) {
+    if (tableName.startsWith(loc)) return fee;
   }
   return 0;
 }

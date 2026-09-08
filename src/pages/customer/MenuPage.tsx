@@ -7,7 +7,7 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck } from 'lucide-react';
+import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck, Receipt } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
@@ -113,6 +113,15 @@ export function MenuPage() {
                   >
                     <LayoutDashboard className="w-4 h-4" />
                     <span className="hidden sm:inline">Staff</span>
+                  </button>
+                )}
+                {member && (
+                  <button
+                    onClick={() => navigate('/orders')}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
+                  >
+                    <Receipt className="w-4 h-4" />
+                    <span className="hidden sm:inline">My Orders</span>
                   </button>
                 )}
                 {member && (

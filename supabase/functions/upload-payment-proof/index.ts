@@ -49,7 +49,7 @@ Deno.serve(async (req: Request) => {
 
     await supabase
       .from("orders")
-      .update({ proof_url: proofUrl })
+      .update({ proof_url: proofUrl, payment_status: "paid" })
       .eq("id", orderId);
 
     return new Response(JSON.stringify({ success: true, proof_url: proofUrl }), {

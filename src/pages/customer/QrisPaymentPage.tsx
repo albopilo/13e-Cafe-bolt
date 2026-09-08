@@ -86,9 +86,11 @@ export function QrisPaymentPage() {
             </div>
 
             <div className="bg-white p-6 rounded-2xl border-2 border-cream-200 inline-block mb-4">
-              <div className="w-48 h-48 bg-cream-200 rounded-xl flex items-center justify-center">
-                <QrCode className="w-24 h-24 text-espresso-400" />
-              </div>
+              <img
+                src="/images/image.png"
+                alt="QRIS Scan to Pay"
+                className="w-48 h-48 object-contain rounded-xl"
+              />
             </div>
 
             <p className="text-2xl font-bold text-espresso-600 mb-1">{formatRupiah(order.grand_total)}</p>

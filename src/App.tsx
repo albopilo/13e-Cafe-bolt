@@ -5,6 +5,7 @@ import { CartProvider } from '@/context/CartContext';
 import { MenuPage } from '@/pages/customer/MenuPage';
 import { CheckoutPage } from '@/pages/customer/CheckoutPage';
 import { QrisPaymentPage } from '@/pages/customer/QrisPaymentPage';
+import { OrderHistoryPage } from '@/pages/customer/OrderHistoryPage';
 import { RegisterPage } from '@/pages/customer/RegisterPage';
 import { LoginPage } from '@/pages/customer/LoginPage';
 import { StaffDashboard } from '@/pages/staff/StaffDashboard';
@@ -63,6 +64,7 @@ function AppRoutes() {
       <Route path="/" element={<MenuPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/qris-payment" element={<QrisPaymentPage />} />
+      <Route path="/orders" element={<OrderHistoryPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/staff" element={

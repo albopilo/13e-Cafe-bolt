@@ -24,7 +24,8 @@ function roundTo100(n: number): number {
 }
 
 function getDeliveryFee(tableName: string): number {
-  if (tableName.startsWith("Mille 1") || tableName.startsWith("Mille 3")) return 5000;
+  if (tableName.startsWith("Mille 1")) return 10000;
+  if (tableName.startsWith("Mille 3")) return 12000;
   return 0;
 }
 
