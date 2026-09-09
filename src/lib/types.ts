@@ -40,6 +40,9 @@ export interface Member {
   name: string;
   name_lower: string;
   birthdate: string;
+  birth_month: number | null;
+  birth_day: number | null;
+  ktp: string | null;
   tier: LoyaltyTier;
   discount_rate: number;
   tax_rate: number;
@@ -48,6 +51,12 @@ export interface Member {
   monthly_since_upgrade: number;
   yearly_since_upgrade: number;
   upgrade_date: string | null;
+  daily_cashback_earned: number;
+  daily_cashback_date: string | null;
+  last_birthday_email_sent: string | null;
+  welcomed: boolean;
+  tier_restored_at: string | null;
+  last_room_upgrade: string | null;
   created_at: string;
 }
 
@@ -118,12 +127,15 @@ export interface VoucherRedemption {
 export interface LoyaltyTransaction {
   id: string;
   member_id: string;
-  order_id: string;
+  order_id: string | null;
   amount: number;
   cashback: number;
   points_earned: number;
   source: string;
   table_name: string;
+  note: string | null;
+  receipt_url: string | null;
+  manual: boolean;
   created_at: string;
 }
 
@@ -141,6 +153,33 @@ export interface StaffProfile {
   user_id: string;
   assigned_location: string;
   created_at: string;
+}
+
+export interface RoomUpgrade {
+  id: string;
+  member_id: string;
+  claimed_at: string;
+  location: string | null;
+}
+
+export interface Settings {
+  id: number;
+  classic_to_bronze_monthly: number;
+  bronze_to_silver_monthly: number;
+  bronze_to_silver_yearly: number;
+  silver_to_gold_monthly: number;
+  silver_to_gold_yearly: number;
+  silver_stay_yearly: number;
+  gold_stay_yearly: number;
+  silver_cashback_rate: number;
+  gold_cashback_rate: number;
+  birthday_gold_cashback_rate: number;
+  silver_daily_cashback_cap: number;
+  gold_daily_cashback_cap: number;
+  bronze_discount_rate: number;
+  silver_discount_rate: number;
+  gold_discount_rate: number;
+  updated_at: string;
 }
 
 export interface CartItem {

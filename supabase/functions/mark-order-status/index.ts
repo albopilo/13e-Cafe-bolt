@@ -12,19 +12,40 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
-const TIER_CONFIGS: Record<string, { threshold: number; discount: number; cashback: number }> = {
-  Classic: { threshold: 0, discount: 0, cashback: 0 },
-  Bronze: { threshold: 500000, discount: 0.10, cashback: 0.05 },
-  Silver: { threshold: 1500000, discount: 0.15, cashback: 0.07 },
-  Gold: { threshold: 3000000, discount: 0.20, cashback: 0.10 },
-};
+interface Settings {
+  classic_to_bronze_monthly: number;
+  bronze_to_silver_monthly: number;
+  bronze_to_silver_yearly: number;
+  silver_to_gold_monthly: number;
+  silver_to_gold_yearly: number;
+  silver_stay_yearly: number;
+  gold_stay_yearly: number;
+  silver_cashback_rate: number;
+  gold_cashback_rate: number;
+  birthday_gold_cashback_rate: number;
+  silver_daily_cashback_cap: number;
+  gold_daily_cashback_cap: number;
+  bronze_discount_rate: number;
+  silver_discount_rate: number;
+  gold_discount_rate: number;
+}
 
 const TIER_ORDER = ["Classic", "Bronze", "Silver", "Gold"];
 
-function getTierFromSpending(spending: number, currentTier: string): string {
+function getTierThresholds(settings: Settings): Record<string, { threshold: number; discount: number; cashback: number; dailyCap: number }> {
+  return {
+    Classic: { threshold: 0, discount: 0, cashback: 0, dailyCap: 0 },
+    Bronze: { threshold: settings.bronze_to_silver_yearly, discount: settings.bronze_discount_rate, cashback: 0, dailyCap: 0 },
+    Silver: { threshold: settings.silver_to_gold_yearly, discount: settings.silver_discount_rate, cashback: settings.silver_cashback_rate, dailyCap: settings.silver_daily_cashback_cap },
+    Gold: { threshold: settings.gold_stay_yearly, discount: settings.gold_discount_rate, cashback: settings.gold_cashback_rate, dailyCap: settings.gold_daily_cashback_cap },
+  };
+}
+
+function getTierFromSpending(spending: number, currentTier: string, settings: Settings): string {
+  const thresholds = getTierThresholds(settings);
   let newTier = currentTier;
   for (const tier of TIER_ORDER) {
-    const config = TIER_CONFIGS[tier];
+    const config = thresholds[tier];
     if (spending >= config.threshold && config.threshold > 0) {
       newTier = tier;
     }
@@ -62,7 +83,6 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // Get current order
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .select("*")
@@ -123,6 +143,14 @@ Deno.serve(async (req: Request) => {
       changed_by: changed_by || null,
     });
 
+    // Fetch settings
+    const { data: settingsData } = await supabase
+      .from("settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
+    const settings = settingsData as Settings | null;
+
     // Handle loyalty on "served"
     if (new_status === "served" && order.is_member && order.member_id && !order.loyalty_recorded) {
       const { data: member } = await supabase
@@ -132,13 +160,29 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
 
       if (member) {
-        const tierConfig = TIER_CONFIGS[member.tier] || TIER_CONFIGS.Classic;
-        let cashbackRate = tierConfig.cashback;
-        if (isBirthdayMonth(member.birthdate) && member.tier === "Gold") {
-          cashbackRate += 0.15;
+        const thresholds = settings ? getTierThresholds(settings) : null;
+        let cashbackRate = 0;
+        let dailyCap = 0;
+
+        if (thresholds) {
+          const tierConfig = thresholds[member.tier] || thresholds.Classic;
+          cashbackRate = tierConfig.cashback;
+          dailyCap = tierConfig.dailyCap;
+          if (isBirthdayMonth(member.birthdate) && member.tier === "Gold" && settings) {
+            cashbackRate += settings.birthday_gold_cashback_rate;
+          }
         }
 
-        const cashback = Math.round(order.total * cashbackRate);
+        let cashback = Math.round(order.total * cashbackRate);
+
+        // Enforce daily cashback cap
+        if (dailyCap > 0) {
+          const today = new Date().toISOString().split("T")[0];
+          const dailyEarned = (member.daily_cashback_date === today) ? member.daily_cashback_earned : 0;
+          const remaining = Math.max(0, dailyCap - dailyEarned);
+          cashback = Math.min(cashback, remaining);
+        }
+
         const pointsEarned = cashback;
 
         // Record loyalty transaction
@@ -152,6 +196,7 @@ Deno.serve(async (req: Request) => {
             points_earned: pointsEarned,
             source: "order_served",
             table_name: order.table_name,
+            manual: false,
           })
           .select("id")
           .single();
@@ -163,20 +208,26 @@ Deno.serve(async (req: Request) => {
         const newPoints = member.redeemable_points + pointsEarned;
 
         // Check for tier upgrade
-        const newTier = getTierFromSpending(newSpending, member.tier);
+        const newTier = settings
+          ? getTierFromSpending(newSpending, member.tier, settings)
+          : member.tier;
         const tierChanged = newTier !== member.tier;
 
-        const updateData: any = {
+        const today = new Date().toISOString().split("T")[0];
+        const updateData: Record<string, unknown> = {
           spending_since_upgrade: tierChanged ? 0 : newSpending,
           monthly_since_upgrade: tierChanged ? 0 : newMonthly,
           yearly_since_upgrade: tierChanged ? 0 : newYearly,
           redeemable_points: newPoints,
+          daily_cashback_earned: cashback,
+          daily_cashback_date: today,
         };
 
-        if (tierChanged) {
+        if (tierChanged && settings) {
           updateData.tier = newTier;
-          updateData.discount_rate = TIER_CONFIGS[newTier].discount;
-          updateData.upgrade_date = new Date().toISOString().split("T")[0];
+          const thresholds2 = getTierThresholds(settings);
+          updateData.discount_rate = thresholds2[newTier].discount;
+          updateData.upgrade_date = today;
         }
 
         await supabase
@@ -219,7 +270,6 @@ Deno.serve(async (req: Request) => {
 
     // Handle loyalty reversal on "cancelled"
     if (new_status === "cancelled" && order.loyalty_recorded && order.member_id) {
-      // Reverse the loyalty transaction
       const { data: tx } = await supabase
         .from("loyalty_transactions")
         .select("*")
@@ -228,7 +278,6 @@ Deno.serve(async (req: Request) => {
         .maybeSingle();
 
       if (tx) {
-        // Record reversal
         await supabase.from("loyalty_transactions").insert({
           member_id: order.member_id,
           order_id,
@@ -237,9 +286,9 @@ Deno.serve(async (req: Request) => {
           points_earned: -tx.points_earned,
           source: "order_cancelled",
           table_name: order.table_name,
+          manual: false,
         });
 
-        // Deduct points from member
         const { data: member } = await supabase
           .from("members")
           .select("redeemable_points, spending_since_upgrade, monthly_since_upgrade, yearly_since_upgrade")
@@ -258,7 +307,6 @@ Deno.serve(async (req: Request) => {
             .eq("user_id", order.member_id);
         }
 
-        // Mark loyalty as reversed
         await supabase
           .from("orders")
           .update({ loyalty_recorded: false })
@@ -271,7 +319,7 @@ Deno.serve(async (req: Request) => {
     });
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: err.message || "Failed to update order status" }),
+      JSON.stringify({ error: (err as Error).message || "Failed to update order status" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }

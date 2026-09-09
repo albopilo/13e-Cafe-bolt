@@ -5,13 +5,14 @@ import { useToast } from '@/context/ToastContext';
 import type { Product, Member, Voucher, MarketingProgram, StaffProfile } from '@/lib/types';
 import { CATEGORY_ORDER, normalizeGoogleDriveUrl } from '@/lib/categories';
 import { formatRupiah } from '@/lib/format';
-import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard, BarChart3 } from 'lucide-react';
+import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard, BarChart3, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardTab } from '@/pages/admin/DashboardTab';
 import { MemberDetailModal } from '@/pages/admin/MemberDetailModal';
 import { MemberForm } from '@/pages/admin/MemberForm';
+import { SettingsTab } from '@/pages/admin/SettingsTab';
 
-type Tab = 'dashboard' | 'products' | 'promos' | 'vouchers' | 'members' | 'staff';
+type Tab = 'dashboard' | 'products' | 'promos' | 'vouchers' | 'members' | 'staff' | 'settings';
 
 export function AdminPanel() {
   const [tab, setTab] = useState<Tab>('dashboard');
@@ -52,6 +53,7 @@ export function AdminPanel() {
             { id: 'vouchers', label: 'Vouchers', icon: Tag },
             { id: 'members', label: 'Members', icon: Users },
             { id: 'staff', label: 'Staff', icon: UserCog },
+            { id: 'settings', label: 'Settings', icon: SettingsIcon },
           ] as const).map(t => (
             <button
               key={t.id}
@@ -74,6 +76,7 @@ export function AdminPanel() {
         {tab === 'vouchers' && <VouchersTab />}
         {tab === 'members' && <MembersTab />}
         {tab === 'staff' && <StaffTab />}
+        {tab === 'settings' && <SettingsTab />}
       </main>
     </div>
   );

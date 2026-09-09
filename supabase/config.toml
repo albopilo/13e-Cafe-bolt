@@ -18,3 +18,12 @@ verify_jwt = true
 
 [functions.push-olsera-customer]
 verify_jwt = true
+
+[functions.manual-transaction]
+verify_jwt = true
+
+[functions.bulk-recalculate]
+verify_jwt = true
+
+[functions.send-birthday-emails]
+verify_jwt = true

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Member, LoyaltyTransaction } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
-import { Users, TrendingUp, Crown, Activity, Loader2 } from 'lucide-react';
+import { Users, TrendingUp, Crown, Activity, Loader2, Cake } from 'lucide-react';
 
 interface DashboardData {
   totalMembers: number;
@@ -11,6 +11,7 @@ interface DashboardData {
   recentTransactions: (LoyaltyTransaction & { member_name?: string })[];
   todayOrderCount: number;
   todayRevenue: number;
+  birthdayMembers: Member[];
 }
 
 export function DashboardTab() {
@@ -40,6 +41,16 @@ export function DashboardTab() {
 
     const todayRevenue = todayOrders.reduce((sum, o) => sum + o.grand_total, 0);
 
+    // Birthday banner: today and upcoming (within 3 days)
+    const now = new Date();
+    const todayMonth = now.getMonth() + 1;
+    const todayDay = now.getDate();
+    const birthdayMembers = members.filter(m => {
+      if (!m.birth_month || !m.birth_day) return false;
+      const daysUntil = ((m.birth_month - todayMonth) * 30) + (m.birth_day - todayDay);
+      return daysUntil >= 0 && daysUntil <= 3;
+    });
+
     setData({
       totalMembers: members.length,
       tierCounts,
@@ -50,6 +61,7 @@ export function DashboardTab() {
       })),
       todayOrderCount: todayOrders.length,
       todayRevenue,
+      birthdayMembers,
     });
     setLoading(false);
   }, []);
@@ -75,6 +87,24 @@ export function DashboardTab() {
 
   return (
     <div className="space-y-4">
+      {data.birthdayMembers.length > 0 && (
+        <div className="card p-4 bg-gradient-to-r from-amber-50 to-cream-50 border-amber-200">
+          <h3 className="font-display font-semibold text-espresso-600 mb-2 flex items-center gap-2">
+            <Cake className="w-5 h-5 text-amber-500" /> Upcoming Birthdays
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {data.birthdayMembers.map(m => {
+              const isToday = m.birth_month === new Date().getMonth() + 1 && m.birth_day === new Date().getDate();
+              return (
+                <div key={m.user_id} className={`px-3 py-1.5 rounded-lg text-sm ${isToday ? 'bg-amber-100 text-amber-600' : 'bg-cream-200 text-espresso-500'}`}>
+                  {m.name} — {m.birth_day}/{m.birth_month}{isToday ? ' (today!)' : ''}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard icon={Users} label="Total Members" value={String(data.totalMembers)} />
         <StatCard icon={Activity} label="Orders Today" value={String(data.todayOrderCount)} />

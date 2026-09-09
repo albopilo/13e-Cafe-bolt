@@ -8,6 +8,7 @@ import { QrisPaymentPage } from '@/pages/customer/QrisPaymentPage';
 import { OrderHistoryPage } from '@/pages/customer/OrderHistoryPage';
 import { RegisterPage } from '@/pages/customer/RegisterPage';
 import { LoginPage } from '@/pages/customer/LoginPage';
+import { ProfilePage } from '@/pages/customer/ProfilePage';
 import { StaffDashboard } from '@/pages/staff/StaffDashboard';
 import { AdminPanel } from '@/pages/admin/AdminPanel';
 import type { ReactNode } from 'react';
@@ -65,6 +66,7 @@ function AppRoutes() {
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/qris-payment" element={<QrisPaymentPage />} />
       <Route path="/orders" element={<OrderHistoryPage />} />
+      <Route path="/profile" element={<ProfilePage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/staff" element={
