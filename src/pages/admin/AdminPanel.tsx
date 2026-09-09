@@ -5,13 +5,16 @@ import { useToast } from '@/context/ToastContext';
 import type { Product, Member, Voucher, MarketingProgram, StaffProfile } from '@/lib/types';
 import { CATEGORY_ORDER, normalizeGoogleDriveUrl } from '@/lib/categories';
 import { formatRupiah } from '@/lib/format';
-import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard } from 'lucide-react';
+import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DashboardTab } from '@/pages/admin/DashboardTab';
+import { MemberDetailModal } from '@/pages/admin/MemberDetailModal';
+import { MemberForm } from '@/pages/admin/MemberForm';
 
-type Tab = 'products' | 'promos' | 'vouchers' | 'members' | 'staff';
+type Tab = 'dashboard' | 'products' | 'promos' | 'vouchers' | 'members' | 'staff';
 
 export function AdminPanel() {
-  const [tab, setTab] = useState<Tab>('products');
+  const [tab, setTab] = useState<Tab>('dashboard');
   const { signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -41,8 +44,9 @@ export function AdminPanel() {
             </button>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-4 pb-3 flex gap-1.5">
+        <div className="max-w-6xl mx-auto px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide -mx-4 px-4">
           {([
+            { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
             { id: 'products', label: 'Products', icon: Package },
             { id: 'promos', label: 'Promos', icon: Gift },
             { id: 'vouchers', label: 'Vouchers', icon: Tag },
@@ -52,18 +56,19 @@ export function AdminPanel() {
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                 tab === t.id ? 'bg-cream-100 text-espresso-600' : 'bg-espresso-700 text-cream-200 hover:bg-espresso-800'
               }`}
             >
               <t.icon className="w-4 h-4" />
-              {t.label}
+              <span>{t.label}</span>
             </button>
           ))}
         </div>
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-4">
+        {tab === 'dashboard' && <DashboardTab />}
         {tab === 'products' && <ProductsTab />}
         {tab === 'promos' && <PromosTab />}
         {tab === 'vouchers' && <VouchersTab />}
@@ -652,6 +657,9 @@ function MembersTab() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [detailMember, setDetailMember] = useState<Member | null>(null);
+  const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   const fetch = useCallback(async () => {
     const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
@@ -674,51 +682,101 @@ function MembersTab() {
 
   return (
     <div className="space-y-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search by name or phone..."
-          className="input-field pl-10 text-sm py-2.5"
-        />
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by name or phone..."
+            className="input-field pl-10 text-sm py-2.5"
+          />
+        </div>
+        <button onClick={() => { setEditingMember(null); setShowForm(true); }} className="btn-primary text-sm py-2.5 flex items-center gap-1.5 flex-shrink-0">
+          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Add Member</span>
+        </button>
       </div>
 
       {filtered.length === 0 ? (
         <div className="text-center py-8 text-espresso-300"><p>No members found.</p></div>
       ) : (
-        <div className="card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-cream-200 text-espresso-500">
-              <tr>
-                <th className="text-left p-3 font-medium">Name</th>
-                <th className="text-left p-3 font-medium hidden sm:table-cell">Phone</th>
-                <th className="text-left p-3 font-medium">Tier</th>
-                <th className="text-right p-3 font-medium">Points</th>
-                <th className="text-right p-3 font-medium hidden sm:table-cell">Spending</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map(m => (
-                <tr key={m.user_id} className="border-t border-cream-200 hover:bg-cream-50">
-                  <td className="p-3 text-espresso-600 font-medium">{m.name}</td>
-                  <td className="p-3 text-espresso-400 hidden sm:table-cell">{m.phone}</td>
-                  <td className="p-3">
-                    <span className={`badge ${
-                      m.tier === 'Gold' ? 'bg-amber-100 text-amber-600' :
-                      m.tier === 'Silver' ? 'bg-cream-200 text-espresso-500' :
-                      m.tier === 'Bronze' ? 'bg-amber-50 text-amber-500' :
-                      'bg-cream-100 text-espresso-400'
-                    }`}>{m.tier}</span>
-                  </td>
-                  <td className="p-3 text-right text-espresso-600 font-medium">{formatRupiah(m.redeemable_points)}</td>
-                  <td className="p-3 text-right text-espresso-400 hidden sm:table-cell">{formatRupiah(m.spending_since_upgrade)}</td>
+        <>
+          {/* Desktop table */}
+          <div className="card overflow-hidden hidden sm:block">
+            <table className="w-full text-sm">
+              <thead className="bg-cream-200 text-espresso-500">
+                <tr>
+                  <th className="text-left p-3 font-medium">Name</th>
+                  <th className="text-left p-3 font-medium">Phone</th>
+                  <th className="text-left p-3 font-medium">Tier</th>
+                  <th className="text-right p-3 font-medium">Points</th>
+                  <th className="text-right p-3 font-medium">Spending</th>
+                  <th className="text-right p-3 font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filtered.map(m => (
+                  <tr key={m.user_id} className="border-t border-cream-200 hover:bg-cream-50 cursor-pointer" onClick={() => setDetailMember(m)}>
+                    <td className="p-3 text-espresso-600 font-medium">{m.name}</td>
+                    <td className="p-3 text-espresso-400">{m.phone}</td>
+                    <td className="p-3">
+                      <span className={`badge ${
+                        m.tier === 'Gold' ? 'bg-amber-100 text-amber-600' :
+                        m.tier === 'Silver' ? 'bg-cream-200 text-espresso-500' :
+                        m.tier === 'Bronze' ? 'bg-amber-50 text-amber-500' :
+                        'bg-cream-100 text-espresso-400'
+                      }`}>{m.tier}</span>
+                    </td>
+                    <td className="p-3 text-right text-espresso-600 font-medium">{formatRupiah(m.redeemable_points)}</td>
+                    <td className="p-3 text-right text-espresso-400">{formatRupiah(m.spending_since_upgrade)}</td>
+                    <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
+                      <button onClick={() => { setEditingMember(m); setShowForm(true); }} className="p-1.5 rounded-lg bg-cream-200 hover:bg-cream-300 transition-colors inline-flex">
+                        <Pencil className="w-3.5 h-3.5 text-espresso-500" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="space-y-2 sm:hidden">
+            {filtered.map(m => (
+              <div key={m.user_id} className="card p-3" onClick={() => setDetailMember(m)}>
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="font-medium text-espresso-600">{m.name}</p>
+                    <p className="text-xs text-espresso-300">{m.phone}</p>
+                  </div>
+                  <span className={`badge ${
+                    m.tier === 'Gold' ? 'bg-amber-100 text-amber-600' :
+                    m.tier === 'Silver' ? 'bg-cream-200 text-espresso-500' :
+                    m.tier === 'Bronze' ? 'bg-amber-50 text-amber-500' :
+                    'bg-cream-100 text-espresso-400'
+                  }`}>{m.tier}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-espresso-400">Points: <span className="text-espresso-600 font-medium">{formatRupiah(m.redeemable_points)}</span></span>
+                  <span className="text-espresso-400">Spent: <span className="text-espresso-600 font-medium">{formatRupiah(m.spending_since_upgrade)}</span></span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {detailMember && (
+        <MemberDetailModal member={detailMember} onClose={() => setDetailMember(null)} />
+      )}
+
+      {showForm && (
+        <MemberForm
+          member={editingMember}
+          onClose={() => { setShowForm(false); setEditingMember(null); }}
+          onSaved={() => { fetch(); setShowForm(false); setEditingMember(null); }}
+        />
       )}
     </div>
   );
@@ -776,38 +834,65 @@ function StaffTab() {
       {staffList.length === 0 ? (
         <div className="text-center py-8 text-espresso-300"><p>No staff assigned yet.</p></div>
       ) : (
-        <div className="card overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-cream-200 text-espresso-500">
-              <tr>
-                <th className="text-left p-3 font-medium">User ID</th>
-                <th className="text-left p-3 font-medium">Assigned Location</th>
-                <th className="text-right p-3 font-medium">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {staffList.map(s => (
-                <tr key={s.user_id} className="border-t border-cream-200 hover:bg-cream-50">
-                  <td className="p-3 text-espresso-600 font-mono text-xs">{s.user_id.slice(0, 8)}...</td>
-                  <td className="p-3">
-                    <select
-                      value={s.assigned_location}
-                      onChange={e => handleUpdateLocation(s.user_id, e.target.value)}
-                      className="input-field text-sm py-1.5 max-w-[180px]"
-                    >
-                      {STAFF_LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
-                    </select>
-                  </td>
-                  <td className="p-3 text-right">
-                    <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
-                      <Trash2 className="w-3.5 h-3.5 text-rust-500" />
-                    </button>
-                  </td>
+        <>
+          {/* Desktop table */}
+          <div className="card overflow-hidden hidden sm:block">
+            <table className="w-full text-sm">
+              <thead className="bg-cream-200 text-espresso-500">
+                <tr>
+                  <th className="text-left p-3 font-medium">User ID</th>
+                  <th className="text-left p-3 font-medium">Assigned Location</th>
+                  <th className="text-right p-3 font-medium">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {staffList.map(s => (
+                  <tr key={s.user_id} className="border-t border-cream-200 hover:bg-cream-50">
+                    <td className="p-3 text-espresso-600 font-mono text-xs">{s.user_id.slice(0, 8)}...</td>
+                    <td className="p-3">
+                      <select
+                        value={s.assigned_location}
+                        onChange={e => handleUpdateLocation(s.user_id, e.target.value)}
+                        className="input-field text-sm py-1.5 max-w-[180px]"
+                      >
+                        {STAFF_LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                      </select>
+                    </td>
+                    <td className="p-3 text-right">
+                      <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
+                        <Trash2 className="w-3.5 h-3.5 text-rust-500" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile cards */}
+          <div className="space-y-2 sm:hidden">
+            {staffList.map(s => (
+              <div key={s.user_id} className="card p-3">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <p className="text-xs text-espresso-300 font-mono">{s.user_id.slice(0, 8)}...</p>
+                  </div>
+                  <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
+                    <Trash2 className="w-3.5 h-3.5 text-rust-500" />
+                  </button>
+                </div>
+                <label className="text-xs text-espresso-400 mb-1 block">Assigned Location</label>
+                <select
+                  value={s.assigned_location}
+                  onChange={e => handleUpdateLocation(s.user_id, e.target.value)}
+                  className="input-field text-sm py-1.5"
+                >
+                  {STAFF_LOCATIONS.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {showForm && <StaffForm onClose={() => setShowForm(false)} onSaved={() => { fetch(); setShowForm(false); }} />}

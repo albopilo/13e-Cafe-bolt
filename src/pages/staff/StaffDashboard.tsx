@@ -173,7 +173,7 @@ export function StaffDashboard() {
   };
 
   const filteredOrders = Array.from(orders.values()).filter(o => {
-    if (location !== 'All' && !o.table_name.startsWith(location)) return false;
+    if (location !== 'All' && location !== 'Main Kitchen' && !o.table_name.startsWith(location)) return false;
     if (filterTab === 'Incoming') return o.status === 'pending' || o.status === 'preparing';
     if (filterTab === 'Served') return o.status === 'served';
     if (filterTab === 'Cancelled') return o.status === 'cancelled';
@@ -221,14 +221,14 @@ export function StaffDashboard() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 pb-3 flex flex-wrap items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
           {availableLocations.length > 1 && (
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="flex gap-1.5 flex-wrap flex-shrink-0">
               {availableLocations.map(loc => (
                 <button
                   key={loc}
                   onClick={() => setLocation(loc)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                     location === loc
                       ? 'bg-cream-100 text-espresso-600'
                       : 'bg-espresso-700 text-cream-200 hover:bg-espresso-800'
@@ -240,7 +240,7 @@ export function StaffDashboard() {
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 bg-espresso-700 rounded-lg px-3 py-1.5">
+          <div className="flex items-center gap-1.5 bg-espresso-700 rounded-lg px-3 py-1.5 flex-shrink-0">
             <Calendar className="w-4 h-4 text-cream-200" />
             <input
               type="date"
@@ -250,12 +250,12 @@ export function StaffDashboard() {
             />
           </div>
 
-          <div className="flex gap-1.5">
+          <div className="flex gap-1.5 flex-shrink-0">
             {FILTER_TABS.map(tab => (
               <button
                 key={tab}
                 onClick={() => setFilterTab(tab)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
                   filterTab === tab
                     ? 'bg-amber-400 text-espresso-700'
                     : 'bg-espresso-700 text-cream-200 hover:bg-espresso-800'
