@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Member, LoyaltyTransaction } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
-import { Users, TrendingUp, Crown, Activity, Loader2, Cake } from 'lucide-react';
+import { Users, TrendingUp, Crown, Activity, Loader as Loader2, Cake } from 'lucide-react';
 
 interface DashboardData {
   totalMembers: number;
@@ -26,6 +26,7 @@ export function DashboardTab() {
         .order('created_at', { ascending: false })
         .limit(10),
       supabase.from('orders')
+        .select('*')
         .eq('date', new Date().toISOString().split('T')[0])
         .neq('status', 'cancelled'),
     ]);

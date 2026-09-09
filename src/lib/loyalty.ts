@@ -78,6 +78,13 @@ export function getTierConfigs(settings: Settings): Record<LoyaltyTier, TierConf
 
 export const TIER_ORDER: LoyaltyTier[] = ['Classic', 'Bronze', 'Silver', 'Gold'];
 
+export const TIER_CONFIGS: Record<LoyaltyTier, { discountRate: number }> = {
+  Classic: { discountRate: 0 },
+  Bronze: { discountRate: DEFAULT_SETTINGS.bronze_discount_rate },
+  Silver: { discountRate: DEFAULT_SETTINGS.silver_discount_rate },
+  Gold: { discountRate: DEFAULT_SETTINGS.gold_discount_rate },
+};
+
 export function getTierFromSpending(
   spendingSinceUpgrade: number,
   currentTier: LoyaltyTier,

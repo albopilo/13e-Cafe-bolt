@@ -5,7 +5,7 @@ import { useToast } from '@/context/ToastContext';
 import type { Member, LoyaltyTransaction, RoomUpgrade } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { getTierPerks } from '@/lib/loyalty';
-import { X, Phone, Mail, Calendar, Crown, Wallet, TrendingUp, Gift, Receipt, ChevronLeft, ChevronRight, Home } from 'lucide-react';
+import { X, Phone, Mail, Calendar, Crown, Wallet, TrendingUp, Gift, Receipt, ChevronLeft, ChevronRight, Chrome as Home } from 'lucide-react';
 
 interface Stats {
   monthly: number;
@@ -403,7 +403,7 @@ function ManualTransactionModalInner({ member, onClose, onSaved }: { member: Mem
       const { data: { text } } = await worker.recognize(f);
       await worker.terminate();
 
-      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const lines = text.split('\n').map((l: string) => l.trim()).filter(Boolean);
       const totalKeywords = ['grand total', 'total bayar', 'amount due', 'total'];
       let extractedAmount = 0;
 

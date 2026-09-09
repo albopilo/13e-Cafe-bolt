@@ -4,7 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import type { Member } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
-import { X, Loader2, Upload, Scan, Receipt } from 'lucide-react';
+import { X, Loader as Loader2, Upload, Scan, Receipt } from 'lucide-react';
 
 export function ManualTransactionModal({ member, onClose, onSaved }: { member: Member; onClose: () => void; onSaved: () => void }) {
   const { addToast } = useToast();
@@ -21,12 +21,12 @@ export function ManualTransactionModal({ member, onClose, onSaved }: { member: M
     setFile(f);
     setScanning(true);
     try {
-      const { createWorker } = await import('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js');
-      const worker = await createWorker('eng');
+      const Tesseract = await import('tesseract.js');
+      const worker = await Tesseract.createWorker('eng');
       const { data: { text } } = await worker.recognize(f);
       await worker.terminate();
 
-      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const lines = text.split('\n').map((l: string) => l.trim()).filter(Boolean);
       const totalKeywords = ['grand total', 'total bayar', 'amount due', 'total'];
       let extractedAmount = 0;
 
