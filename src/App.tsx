@@ -14,7 +14,7 @@ import { AdminPanel } from '@/pages/admin/AdminPanel';
 import type { ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
-  const { session, isAdmin, loading } = useAuth();
+  const { session, isAdmin, isMainKitchen, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -29,7 +29,7 @@ function AdminRoute({ children }: { children: ReactNode }) {
     return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname)}`} replace />;
   }
 
-  if (!isAdmin) {
+  if (!isAdmin && !isMainKitchen) {
     return <Navigate to="/" replace />;
   }
 

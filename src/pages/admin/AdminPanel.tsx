@@ -15,9 +15,19 @@ import { SettingsTab } from '@/pages/admin/SettingsTab';
 type Tab = 'dashboard' | 'products' | 'promos' | 'vouchers' | 'members' | 'staff' | 'settings';
 
 export function AdminPanel() {
-  const [tab, setTab] = useState<Tab>('dashboard');
-  const { signOut } = useAuth();
+  const { signOut, isAdmin, isMainKitchen } = useAuth();
   const navigate = useNavigate();
+  const allTabs: { id: Tab; label: string; icon: typeof BarChart3 }[] = [
+    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+    { id: 'products', label: 'Products', icon: Package },
+    { id: 'promos', label: 'Promos', icon: Gift },
+    { id: 'vouchers', label: 'Vouchers', icon: Tag },
+    { id: 'members', label: 'Members', icon: Users },
+    { id: 'staff', label: 'Staff', icon: UserCog },
+    { id: 'settings', label: 'Settings', icon: SettingsIcon },
+  ];
+  const visibleTabs = isMainKitchen && !isAdmin ? allTabs.filter(t => t.id === 'members') : allTabs;
+  const [tab, setTab] = useState<Tab>(isMainKitchen && !isAdmin ? 'members' : 'dashboard');
 
   return (
     <div className="min-h-screen bg-cream-50">
@@ -25,7 +35,7 @@ export function AdminPanel() {
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Coffee className="w-6 h-6" />
-            <h1 className="font-display font-bold text-lg">Admin Panel</h1>
+            <h1 className="font-display font-bold text-lg">{isMainKitchen && !isAdmin ? 'Main Kitchen' : 'Admin Panel'}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -46,15 +56,7 @@ export function AdminPanel() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-hide -mx-4 px-4">
-          {([
-            { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-            { id: 'products', label: 'Products', icon: Package },
-            { id: 'promos', label: 'Promos', icon: Gift },
-            { id: 'vouchers', label: 'Vouchers', icon: Tag },
-            { id: 'members', label: 'Members', icon: Users },
-            { id: 'staff', label: 'Staff', icon: UserCog },
-            { id: 'settings', label: 'Settings', icon: SettingsIcon },
-          ] as const).map(t => (
+          {visibleTabs.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
@@ -657,12 +659,14 @@ function VoucherForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
 
 function MembersTab() {
   const { addToast } = useToast();
+  const { session, isAdmin } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [detailMember, setDetailMember] = useState<Member | null>(null);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [deletingMember, setDeletingMember] = useState(false);
 
   const fetch = useCallback(async () => {
     const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
@@ -681,6 +685,31 @@ function MembersTab() {
     m.phone.includes(search)
   );
 
+  const handleDeleteMember = async (m: Member) => {
+    if (!confirm(`Permanently delete member "${m.name}"? This will remove their account, all transactions, and room upgrade history. This cannot be undone.`)) return;
+    setDeletingMember(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ action: 'delete_member', user_id: m.user_id }),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to delete member');
+      }
+      addToast('Member deleted', 'success');
+      fetch();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Failed to delete member', 'error');
+    } finally {
+      setDeletingMember(false);
+    }
+  };
+
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="w-8 h-8 animate-spin text-espresso-300" /></div>;
 
   return (
@@ -696,9 +725,11 @@ function MembersTab() {
             className="input-field pl-10 text-sm py-2.5"
           />
         </div>
-        <button onClick={() => { setEditingMember(null); setShowForm(true); }} className="btn-primary text-sm py-2.5 flex items-center gap-1.5 flex-shrink-0">
-          <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Add Member</span>
-        </button>
+        {isAdmin && (
+          <button onClick={() => { setEditingMember(null); setShowForm(true); }} className="btn-primary text-sm py-2.5 flex items-center gap-1.5 flex-shrink-0">
+            <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Add Member</span>
+          </button>
+        )}
       </div>
 
       {filtered.length === 0 ? (
@@ -734,9 +765,16 @@ function MembersTab() {
                     <td className="p-3 text-right text-espresso-600 font-medium">{formatRupiah(m.redeemable_points)}</td>
                     <td className="p-3 text-right text-espresso-400">{formatRupiah(m.spending_since_upgrade)}</td>
                     <td className="p-3 text-right" onClick={e => e.stopPropagation()}>
-                      <button onClick={() => { setEditingMember(m); setShowForm(true); }} className="p-1.5 rounded-lg bg-cream-200 hover:bg-cream-300 transition-colors inline-flex">
-                        <Pencil className="w-3.5 h-3.5 text-espresso-500" />
-                      </button>
+                      <div className="flex gap-1.5 justify-end">
+                        {isAdmin && (
+                          <button onClick={() => { setEditingMember(m); setShowForm(true); }} className="p-1.5 rounded-lg bg-cream-200 hover:bg-cream-300 transition-colors inline-flex">
+                            <Pencil className="w-3.5 h-3.5 text-espresso-500" />
+                          </button>
+                        )}
+                        <button onClick={() => handleDeleteMember(m)} disabled={deletingMember} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex disabled:opacity-50">
+                          <Trash2 className="w-3.5 h-3.5 text-rust-500" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -771,7 +809,7 @@ function MembersTab() {
       )}
 
       {detailMember && (
-        <MemberDetailModal member={detailMember} onClose={() => setDetailMember(null)} />
+        <MemberDetailModal member={detailMember} isAdmin={isAdmin} onClose={() => setDetailMember(null)} onDeleted={() => { setDetailMember(null); fetch(); }} />
       )}
 
       {showForm && (

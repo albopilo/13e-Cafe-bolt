@@ -40,14 +40,31 @@ Deno.serve(async (req: Request) => {
       .eq("user_id", callerId)
       .maybeSingle();
 
+    const isMainKitchenStaff = !admin;
+
     if (!admin) {
-      return new Response(JSON.stringify({ error: "Admin access required" }), {
-        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      // Allow Main Kitchen staff for delete_member only
+      const { data: staff } = await supabase
+        .from("staff")
+        .select("assigned_location")
+        .eq("user_id", callerId)
+        .maybeSingle();
+      if (!staff || staff.assigned_location !== "Main Kitchen") {
+        return new Response(JSON.stringify({ error: "Admin access required" }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     const body = await req.json();
     const action = body.action;
+
+    // Only admins can create/delete staff
+    if (!admin && (action === "create" || action === "delete")) {
+      return new Response(JSON.stringify({ error: "Admin access required for this action" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (action === "create") {
       const { email, password, location } = body;
@@ -147,7 +164,52 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    return new Response(JSON.stringify({ error: "Unknown action. Use 'create' or 'delete'." }), {
+    if (action === "delete_member") {
+      const { user_id } = body;
+
+      if (!user_id) {
+        return new Response(JSON.stringify({ error: "User ID is required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (user_id === callerId) {
+        return new Response(JSON.stringify({ error: "You cannot delete your own account" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: targetAdmin } = await supabase
+        .from("admins")
+        .select("user_id")
+        .eq("user_id", user_id)
+        .maybeSingle();
+
+      if (targetAdmin) {
+        return new Response(JSON.stringify({ error: "Cannot delete an admin account" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Clean up related data
+      await supabase.from("loyalty_transactions").delete().eq("member_id", user_id);
+      await supabase.from("room_upgrades").delete().eq("member_id", user_id);
+      await supabase.from("members").delete().eq("user_id", user_id);
+
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(user_id);
+
+      if (deleteError) {
+        return new Response(JSON.stringify({ error: deleteError.message }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    return new Response(JSON.stringify({ error: "Unknown action. Use 'create', 'delete', or 'delete_member'." }), {
       status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err) {

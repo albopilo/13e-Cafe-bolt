@@ -6,7 +6,7 @@ import type { Member, LoyaltyTransaction, RoomUpgrade } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { scanReceipt } from '@/lib/receiptOcr';
 import { getTierPerks } from '@/lib/loyalty';
-import { X, Phone, Mail, Calendar, Crown, Wallet, TrendingUp, Gift, Receipt, ChevronLeft, ChevronRight, Chrome as Home } from 'lucide-react';
+import { X, Phone, Mail, Calendar, Crown, Wallet, TrendingUp, Gift, Receipt, ChevronLeft, ChevronRight, Chrome as Home, Trash2 } from 'lucide-react';
 
 interface Stats {
   monthly: number;
@@ -18,9 +18,10 @@ interface Stats {
 
 const TX_PER_PAGE = 5;
 
-export function MemberDetailModal({ member, onClose }: { member: Member; onClose: () => void }) {
+export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { member: Member; isAdmin: boolean; onClose: () => void; onDeleted?: () => void }) {
   const { addToast } = useToast();
   const { session } = useAuth();
+  const [deletingMember, setDeletingMember] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
   const [transactions, setTransactions] = useState<LoyaltyTransaction[]>([]);
   const [txCount, setTxCount] = useState(0);
@@ -194,6 +195,32 @@ export function MemberDetailModal({ member, onClose }: { member: Member; onClose
     }
   };
 
+  const handleDeleteMember = async () => {
+    if (!confirm(`Permanently delete member "${member.name}"? This will remove their account, all transactions, and room upgrade history. This cannot be undone.`)) return;
+    setDeletingMember(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ action: 'delete_member', user_id: member.user_id }),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to delete member');
+      }
+      addToast('Member deleted', 'success');
+      onDeleted?.();
+      onClose();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Failed to delete member', 'error');
+    } finally {
+      setDeletingMember(false);
+    }
+  };
+
   const tierColors: Record<string, string> = {
     Gold: 'bg-amber-100 text-amber-600',
     Silver: 'bg-cream-200 text-espresso-500',
@@ -277,20 +304,31 @@ export function MemberDetailModal({ member, onClose }: { member: Member; onClose
               >
                 <Receipt className="w-3.5 h-3.5" /> Add Transaction
               </button>
-              <button
-                onClick={handleRedeemPoints}
-                disabled={redeeming || member.redeemable_points <= 0}
-                className="btn-sage text-xs py-2 flex items-center gap-1.5"
-              >
-                <Gift className="w-3.5 h-3.5" /> Redeem Points
-              </button>
-              {member.tier === 'Gold' && (
+              {isAdmin && (
+                <button
+                  onClick={handleRedeemPoints}
+                  disabled={redeeming || member.redeemable_points <= 0}
+                  className="btn-sage text-xs py-2 flex items-center gap-1.5"
+                >
+                  <Gift className="w-3.5 h-3.5" /> Redeem Points
+                </button>
+              )}
+              {isAdmin && member.tier === 'Gold' && (
                 <button
                   onClick={handleClaimRoomUpgrade}
                   disabled={claimingRoom || !canClaimRoom}
                   className="btn-secondary text-xs py-2 flex items-center gap-1.5"
                 >
                   <Home className="w-3.5 h-3.5" /> Claim Room Upgrade
+                </button>
+              )}
+              {isAdmin && (
+                <button
+                  onClick={handleDeleteMember}
+                  disabled={deletingMember}
+                  className="text-xs py-2 px-3 rounded-lg bg-rust-50 text-rust-500 hover:bg-rust-100 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  <Trash2 className="w-3.5 h-3.5" /> Delete Member
                 </button>
               )}
             </div>
@@ -333,12 +371,14 @@ export function MemberDetailModal({ member, onClose }: { member: Member; onClose
                           {tx.receipt_url && (
                             <a href={tx.receipt_url} target="_blank" rel="noopener noreferrer" className="text-sage-500 text-xs hover:underline">view</a>
                           )}
-                          <button
-                            onClick={() => handleDeleteTransaction(tx.id, tx)}
-                            className="text-rust-400 text-xs hover:text-rust-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            delete
-                          </button>
+                          {isAdmin && (
+                            <button
+                              onClick={() => handleDeleteTransaction(tx.id, tx)}
+                              className="text-rust-400 text-xs hover:text-rust-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              delete
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}

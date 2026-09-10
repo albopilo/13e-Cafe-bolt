@@ -10,6 +10,7 @@ interface AuthContextValue {
   staff: StaffProfile | null;
   isAdmin: boolean;
   isStaff: boolean;
+  isMainKitchen: boolean;
   role: UserRole;
   loading: boolean;
   signUp: (email: string, password: string, metadata: { name: string; phone: string; birthdate: string; ktp?: string }) => Promise<{ error: string | null }>;
@@ -103,10 +104,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const isStaff = !!staff && !isAdmin;
+  const isMainKitchen = !!staff && staff.assigned_location === 'Main Kitchen' && !isAdmin;
   const role: UserRole = isAdmin ? 'admin' : isStaff ? 'staff' : 'member';
 
   return (
-    <AuthContext.Provider value={{ session, user, member, staff, isAdmin, isStaff, role, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ session, user, member, staff, isAdmin, isStaff, isMainKitchen, role, loading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
