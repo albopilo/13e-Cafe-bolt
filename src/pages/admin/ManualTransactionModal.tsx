@@ -4,6 +4,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import type { Member } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
+import { scanReceipt } from '@/lib/receiptOcr';
 import { X, Loader as Loader2, Upload, Scan, Receipt } from 'lucide-react';
 
 export function ManualTransactionModal({ member, onClose, onSaved }: { member: Member; onClose: () => void; onSaved: () => void }) {
@@ -21,44 +22,9 @@ export function ManualTransactionModal({ member, onClose, onSaved }: { member: M
     setFile(f);
     setScanning(true);
     try {
-      const Tesseract = await import('tesseract.js');
-      const worker = await Tesseract.createWorker('eng');
-      const { data: { text } } = await worker.recognize(f);
-      await worker.terminate();
+      const { amount: extractedAmount } = await scanReceipt(f);
 
-      const lines = text.split('\n').map((l: string) => l.trim()).filter(Boolean);
-      const totalKeywords = ['grand total', 'total bayar', 'amount due', 'total'];
-      let extractedAmount = 0;
-
-      for (const line of lines) {
-        const lower = line.toLowerCase();
-        if (totalKeywords.some(kw => lower.includes(kw))) {
-          const match = line.match(/(\d{1,3}(?:[.,]\d{3})+)/);
-          if (match) {
-            const num = parseInt(match[1].replace(/[.,]/g, ''), 10);
-            if (num >= 1000 && num <= 10000000) {
-              extractedAmount = num;
-              break;
-            }
-          }
-        }
-      }
-
-      if (extractedAmount === 0) {
-        let maxNum = 0;
-        for (const line of lines) {
-          const match = line.match(/(\d{1,3}(?:[.,]\d{3})+)/);
-          if (match) {
-            const num = parseInt(match[1].replace(/[.,]/g, ''), 10);
-            if (num >= 1000 && num <= 10000000 && num > maxNum) {
-              maxNum = num;
-            }
-          }
-        }
-        extractedAmount = maxNum;
-      }
-
-      if (extractedAmount > 0) {
+      if (extractedAmount !== null) {
         setAmount(String(extractedAmount));
         addToast(`Scanned: ${formatRupiah(extractedAmount)}`, 'success');
       } else {

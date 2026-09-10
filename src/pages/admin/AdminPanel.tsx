@@ -924,6 +924,7 @@ function StaffForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => v
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: email.trim(),
         password,
+        options: { data: { role: 'staff' } },
       });
       if (authError) throw new Error(authError.message);
       if (!authData.user) throw new Error('Failed to create account');
