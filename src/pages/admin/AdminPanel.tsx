@@ -789,6 +789,7 @@ const STAFF_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
 
 function StaffTab() {
   const { addToast } = useToast();
+  const { session } = useAuth();
   const [staffList, setStaffList] = useState<StaffProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -805,14 +806,30 @@ function StaffTab() {
 
   useEffect(() => { fetch(); }, [fetch]);
 
+  const [deleting, setDeleting] = useState(false);
+
   const handleDelete = async (userId: string) => {
-    if (!confirm('Remove this staff member?')) return;
-    const { error } = await supabase.from('staff').delete().eq('user_id', userId);
-    if (error) {
-      addToast('Failed to remove staff', 'error');
-    } else {
-      addToast('Staff member removed', 'success');
+    if (!confirm('Permanently delete this staff account? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ action: 'delete', user_id: userId }),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to delete staff');
+      }
+      addToast('Staff account deleted', 'success');
       fetch();
+    } catch (err) {
+      addToast(err instanceof Error ? err.message : 'Failed to delete staff', 'error');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -862,7 +879,7 @@ function StaffTab() {
                       </select>
                     </td>
                     <td className="p-3 text-right">
-                      <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
+                      <button onClick={() => handleDelete(s.user_id)} disabled={deleting} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex disabled:opacity-50">
                         <Trash2 className="w-3.5 h-3.5 text-rust-500" />
                       </button>
                     </td>
@@ -880,7 +897,7 @@ function StaffTab() {
                   <div>
                     <p className="text-xs text-espresso-300 font-mono">{s.user_id.slice(0, 8)}...</p>
                   </div>
-                  <button onClick={() => handleDelete(s.user_id)} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex">
+                  <button onClick={() => handleDelete(s.user_id)} disabled={deleting} className="p-1.5 rounded-lg bg-rust-50 hover:bg-rust-100 transition-colors inline-flex disabled:opacity-50">
                     <Trash2 className="w-3.5 h-3.5 text-rust-500" />
                   </button>
                 </div>
@@ -905,6 +922,7 @@ function StaffTab() {
 
 function StaffForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const { addToast } = useToast();
+  const { session } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [location, setLocation] = useState(STAFF_LOCATIONS[0]);
@@ -921,20 +939,23 @@ function StaffForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => v
     }
     setSaving(true);
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: { data: { role: 'staff' } },
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
+          action: 'create',
+          email: email.trim(),
+          password,
+          location,
+        }),
       });
-      if (authError) throw new Error(authError.message);
-      if (!authData.user) throw new Error('Failed to create account');
-
-      const { error: staffError } = await supabase.from('staff').insert({
-        user_id: authData.user.id,
-        assigned_location: location,
-      });
-      if (staffError) throw new Error(staffError.message);
-
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to create staff account');
+      }
       addToast('Staff account created', 'success');
       onSaved();
     } catch (err) {
