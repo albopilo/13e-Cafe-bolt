@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Product } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { normalizeGoogleDriveUrl } from '@/lib/categories';
+import { useLang } from '@/context/LanguageContext';
 import { Plus, Coffee } from 'lucide-react';
 
 interface ProductCardProps {
@@ -10,8 +11,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAdd }: ProductCardProps) {
+  const { t } = useLang();
   const [showModal, setShowModal] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
   const photoUrl = product.photo_1 ? normalizeGoogleDriveUrl(product.photo_1) : null;
@@ -31,7 +32,6 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
   const handleVariantSelect = (variant: string) => {
     onAdd(product, variant);
     setShowModal(false);
-    setSelectedVariant(null);
     setSearch('');
   };
 
@@ -67,7 +67,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
             className="mt-auto btn-sage text-xs py-2 flex items-center justify-center gap-1"
           >
             <Plus className="w-3.5 h-3.5" />
-            {hasVariants ? 'Select variation' : 'Add to cart'}
+            {hasVariants ? t('selectVariation') : t('addToCart')}
           </button>
         </div>
       </div>
@@ -83,7 +83,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
           >
             <div className="p-4 border-b border-cream-200">
               <h3 className="font-display font-semibold text-espresso-600">
-                Select {product.variant_label}
+                {t('selectVariation')} — {product.variant_label}
               </h3>
               <p className="text-sm text-espresso-300 mt-1">{product.name}</p>
             </div>
@@ -91,7 +91,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
               <div className="px-4 pt-3">
                 <input
                   type="text"
-                  placeholder="Search variants..."
+                  placeholder={t('searchVariants')}
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="input-field text-sm py-2"
@@ -101,7 +101,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
             )}
             <div className="overflow-y-auto p-3 flex-1">
               {variants.length === 0 ? (
-                <p className="text-center text-espresso-300 py-8 text-sm">No variants found</p>
+                <p className="text-center text-espresso-300 py-8 text-sm">{t('noVariantsFound')}</p>
               ) : (
                 <div className="flex flex-col gap-1.5">
                   {variants.map(variant => (
@@ -122,7 +122,7 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
                 onClick={() => { setShowModal(false); setSearch(''); }}
                 className="btn-secondary w-full text-sm py-2.5"
               >
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>
@@ -131,4 +131,3 @@ export function ProductCard({ product, onAdd }: ProductCardProps) {
     </>
   );
 }
-

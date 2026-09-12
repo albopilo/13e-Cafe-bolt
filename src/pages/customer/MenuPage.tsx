@@ -7,7 +7,8 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
-import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck, Receipt } from 'lucide-react';
+import { useLang } from '@/context/LanguageContext';
+import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck, Receipt, Languages } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
@@ -20,9 +21,10 @@ export function MenuPage() {
   const { addItem, count, setProducts: setCartProducts, setPromoPrograms, pendingVariantSelection, resolveVariantSelection, cancelVariantSelection } = useCart();
   const { member, isAdmin, isStaff, signOut } = useAuth();
   const { addToast } = useToast();
+  const { lang, toggleLang, t } = useLang();
   const navigate = useNavigate();
 
-  const opStatus = useMemo(() => getOperationalStatus(), []);
+  const opStatus = useMemo(() => getOperationalStatus(lang), [lang]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -74,7 +76,7 @@ export function MenuPage() {
 
   const handleAdd = (product: Product, variant: string) => {
     addItem(product, variant);
-    addToast(`${product.name} (${variant}) added to cart`, 'success');
+    addToast(`${product.name} (${variant}) ${t('addedToCart')}`, 'success');
   };
 
   const handleCheckout = () => {
@@ -95,6 +97,16 @@ export function MenuPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Language toggle */}
+            <button
+              onClick={toggleLang}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
+              title="Switch language / Ganti bahasa"
+            >
+              <Languages className="w-4 h-4" />
+              {lang === 'en' ? 'EN' : 'ID'}
+            </button>
+
             {member || isAdmin || isStaff ? (
               <div className="flex items-center gap-2">
                 {isAdmin && (
@@ -103,7 +115,7 @@ export function MenuPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-espresso-600 text-cream-100 text-sm font-medium hover:bg-espresso-700 transition-colors"
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    <span className="hidden sm:inline">Admin Panel</span>
+                    <span className="hidden sm:inline">{t('adminPanel')}</span>
                   </button>
                 )}
                 {(isAdmin || isStaff) && (
@@ -112,7 +124,7 @@ export function MenuPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
                   >
                     <LayoutDashboard className="w-4 h-4" />
-                    <span className="hidden sm:inline">Staff</span>
+                    <span className="hidden sm:inline">{t('staff')}</span>
                   </button>
                 )}
                 {member && (
@@ -121,7 +133,7 @@ export function MenuPage() {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
                   >
                     <Receipt className="w-4 h-4" />
-                    <span className="hidden sm:inline">My Orders</span>
+                    <span className="hidden sm:inline">{t('myOrders')}</span>
                   </button>
                 )}
                 {member && (
@@ -140,7 +152,7 @@ export function MenuPage() {
                 onClick={() => navigate('/login')}
                 className="btn-secondary text-sm py-2 px-4"
               >
-                Login
+                {t('login')}
               </button>
             )}
             <button
@@ -158,7 +170,7 @@ export function MenuPage() {
         </div>
 
         {/* Category tabs */}
-        {!opStatus.isOpen ? null : (
+        {opStatus.isOpen && (
           <div className="max-w-5xl mx-auto px-4 pb-3">
             <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-hide">
               {categories.map(cat => (
@@ -184,7 +196,7 @@ export function MenuPage() {
         <div className="max-w-5xl mx-auto px-4 py-16">
           <div className="card p-8 text-center">
             <Coffee className="w-16 h-16 text-espresso-300 mx-auto mb-4" />
-            <h2 className="font-display font-bold text-xl text-espresso-600 mb-2">We're Closed</h2>
+            <h2 className="font-display font-bold text-xl text-espresso-600 mb-2">{t('wereClosed')}</h2>
             <p className="text-espresso-400">{opStatus.message}</p>
           </div>
         </div>
@@ -200,7 +212,7 @@ export function MenuPage() {
           </div>
           {filteredProducts.length === 0 && (
             <div className="text-center py-16 text-espresso-300">
-              <p>No items in this category yet.</p>
+              <p>{t('noItemsInCategory')}</p>
             </div>
           )}
         </main>
@@ -213,22 +225,22 @@ export function MenuPage() {
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Clock className="w-6 h-6 text-espresso-600" />
-                <h2 className="font-display font-bold text-lg text-espresso-600">Opening Hours</h2>
+                <h2 className="font-display font-bold text-lg text-espresso-600">{t('openingHours')}</h2>
               </div>
               <button onClick={() => setHoursPopup(false)} className="p-1 hover:bg-cream-200 rounded-lg">
                 <X className="w-5 h-5 text-espresso-400" />
               </button>
             </div>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-espresso-400">Sunday–Friday</span><span className="text-espresso-600 font-medium">08:30–19:30</span></div>
-              <div className="flex justify-between"><span className="text-espresso-400">Saturday</span><span className="text-espresso-600 font-medium">08:30–21:30</span></div>
-              <div className="flex justify-between"><span className="text-espresso-400">Monday</span><span className="text-rust-500 font-medium">Closed</span></div>
+              <div className="flex justify-between"><span className="text-espresso-400">{t('sunToFri')}</span><span className="text-espresso-600 font-medium">08:30–19:30</span></div>
+              <div className="flex justify-between"><span className="text-espresso-400">{t('saturday')}</span><span className="text-espresso-600 font-medium">08:30–21:30</span></div>
+              <div className="flex justify-between"><span className="text-espresso-400">{t('monday')}</span><span className="text-rust-500 font-medium">{t('closed')}</span></div>
             </div>
             <div className={`mt-4 p-3 rounded-xl text-sm ${opStatus.isOpen ? 'bg-sage-50 text-sage-600' : 'bg-rust-50 text-rust-500'}`}>
               {opStatus.message}
             </div>
             <button onClick={() => setHoursPopup(false)} className="btn-primary w-full mt-4">
-              {opStatus.isOpen ? 'Start Ordering' : 'Got it'}
+              {opStatus.isOpen ? t('startOrdering') : t('gotIt')}
             </button>
           </div>
         </div>
@@ -239,12 +251,12 @@ export function MenuPage() {
         <div className="fixed inset-0 z-50 bg-espresso-900/50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-cream-100 rounded-2xl p-6 max-w-sm w-full animate-slide-up">
             <div className="flex items-center gap-2 mb-4">
-              <span className="badge bg-sage-100 text-sage-600">Free Gift!</span>
+              <span className="badge bg-sage-100 text-sage-600">{t('freeGift')}</span>
             </div>
             <h3 className="font-display font-semibold text-espresso-600 mb-1">
-              Select your free {pendingVariantSelection.product.name}
+              {t('selectFreeGift')} {pendingVariantSelection.product.name}
             </h3>
-            <p className="text-sm text-espresso-300 mb-4">This item is included for free with your order.</p>
+            <p className="text-sm text-espresso-300 mb-4">{t('freeGiftIncluded')}</p>
             <div className="max-h-60 overflow-y-auto flex flex-col gap-1.5">
               {pendingVariantSelection.product.variant_names.map(variant => (
                 <button
@@ -258,7 +270,7 @@ export function MenuPage() {
               ))}
             </div>
             <button onClick={cancelVariantSelection} className="btn-secondary w-full mt-4 text-sm py-2.5">
-              Skip
+              {t('skip')}
             </button>
           </div>
         </div>
