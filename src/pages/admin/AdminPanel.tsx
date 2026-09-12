@@ -809,7 +809,7 @@ function MembersTab() {
       )}
 
       {detailMember && (
-        <MemberDetailModal member={detailMember} isAdmin={isAdmin} onClose={() => setDetailMember(null)} onDeleted={() => { setDetailMember(null); fetch(); }} />
+        <MemberDetailModal member={detailMember} isAdmin={isAdmin} isMainKitchen={isMainKitchen} onClose={() => setDetailMember(null)} onDeleted={() => { setDetailMember(null); fetch(); }} />
       )}
 
       {showForm && (
