@@ -156,38 +156,25 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
   };
 
   const handleDeleteTransaction = async (txId: string, tx: LoyaltyTransaction) => {
-    if (!confirm('Delete this transaction? This will reverse its effect on spending and points.')) return;
+    const label = tx.order_id
+      ? 'This will also delete the associated order and its items. This cannot be undone.'
+      : 'This will reverse its effect on spending and points. This cannot be undone.';
+    if (!confirm(`Delete this transaction? ${label}`)) return;
     try {
-      if (tx.amount > 0 || tx.points_earned > 0) {
-        await supabase.from('loyalty_transactions').insert({
-          member_id: member.user_id,
-          order_id: tx.order_id,
-          amount: -tx.amount,
-          cashback: -tx.cashback,
-          points_earned: -tx.points_earned,
-          source: 'transaction_deleted',
-          table_name: tx.table_name,
-          manual: true,
-          note: `Reversal of deleted transaction`,
-        });
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-transaction`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ transaction_id: txId }),
+      });
 
-        const { data: m } = await supabase
-          .from('members')
-          .select('redeemable_points, spending_since_upgrade, monthly_since_upgrade, yearly_since_upgrade')
-          .eq('user_id', member.user_id)
-          .maybeSingle();
-
-        if (m) {
-          await supabase.from('members').update({
-            redeemable_points: Math.max(0, m.redeemable_points - tx.points_earned),
-            spending_since_upgrade: Math.max(0, m.spending_since_upgrade - tx.amount),
-            monthly_since_upgrade: Math.max(0, m.monthly_since_upgrade - tx.amount),
-            yearly_since_upgrade: Math.max(0, m.yearly_since_upgrade - tx.amount),
-          }).eq('user_id', member.user_id);
-        }
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to delete transaction');
       }
 
-      await supabase.from('loyalty_transactions').delete().eq('id', txId);
       addToast('Transaction deleted', 'success');
       loadData(txPage);
     } catch (err) {
