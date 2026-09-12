@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, type ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { Member, StaffProfile, UserRole } from '@/lib/types';
@@ -27,28 +27,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [staff, setStaff] = useState<StaffProfile | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const initialLoadDone = useRef(false);
 
   const loadProfile = async (userId: string) => {
-    const { data: m } = await supabase
-      .from('members')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    setMember(m as Member | null);
-
-    const { data: a } = await supabase
-      .from('admins')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle();
-    setIsAdmin(!!a);
-
-    const { data: s } = await supabase
-      .from('staff')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    setStaff(s as StaffProfile | null);
+    const [mRes, aRes, sRes] = await Promise.all([
+      supabase.from('members').select('*').eq('user_id', userId).maybeSingle(),
+      supabase.from('admins').select('user_id').eq('user_id', userId).maybeSingle(),
+      supabase.from('staff').select('*').eq('user_id', userId).maybeSingle(),
+    ]);
+    setMember(mRes.data as Member | null);
+    setIsAdmin(!!aRes.data);
+    setStaff(sRes.data as StaffProfile | null);
   };
 
   useEffect(() => {
@@ -59,17 +48,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await loadProfile(data.session.user.id);
       }
       setLoading(false);
+      initialLoadDone.current = true;
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
 
+      // TOKEN_REFRESHED and SIGNED_IN from tab focus should not trigger loading
+      // Only actual sign-in (initial) and sign-out should
+      if (!initialLoadDone.current) return;
+
+      if (event === 'SIGNED_OUT') {
+        setMember(null);
+        setIsAdmin(false);
+        setStaff(null);
+        setLoading(false);
+        return;
+      }
+
+      if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+        // Session refreshed silently — user is still the same, no need to reload profile
+        // unless we don't have profile data yet
+        if (newSession?.user && !member && !isAdmin && !staff) {
+          loadProfile(newSession.user.id);
+        }
+        return;
+      }
+
       if (newSession?.user) {
-        setLoading(true);
         (async () => {
           await loadProfile(newSession.user.id);
-          setLoading(false);
         })();
       } else {
         setMember(null);
