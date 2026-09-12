@@ -1,5 +1,6 @@
 // delete-transaction: deletes a loyalty transaction, its referenced order,
 // then recalculates the member's spending, points, and tier from ALL remaining transactions.
+// verify_jwt is set to false in config.toml so preflight OPTIONS requests pass without a JWT.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
