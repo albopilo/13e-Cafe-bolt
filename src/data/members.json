@@ -1,0 +1,2398 @@
+[
+  {
+    "id": "1751446503544",
+    "upgradeDate": "2025-07-08T10:18:20.430Z",
+    "roomUpgradeHistory": [],
+    "lastRoomUpgrade": null,
+    "welcomed": true,
+    "phone": "08126477035",
+    "ktp": "1271032811000001",
+    "birthdate": "2000-11-28",
+    "name": "Edoardo",
+    "email": "21edoardo@gmail.com",
+    "nameLower": "edoardo",
+    "spendingSinceUpgrade": 62640,
+    "tierRestoredAt": {
+      "_seconds": 1768640866,
+      "_nanoseconds": 711000000
+    },
+    "yearlySpend2025": 3225963,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Silver",
+    "tier": "Silver",
+    "redeemablePoints": 16407,
+    "monthlySinceUpgrade": 84000,
+    "yearlySinceUpgrade": 696000,
+    "transactions": [
+      {
+        "fileData": null,
+        "amount": 40500,
+        "date": "2025-07-04T11:39:36.911Z",
+        "note": "",
+        "cashback": 0
+      },
+      {
+        "note": "",
+        "date": "2025-07-08T10:16:35.655Z",
+        "fileData": null,
+        "amount": 158400,
+        "cashback": 0
+      },
+      {
+        "fileData": null,
+        "date": "2025-07-08T10:16:35.655Z",
+        "amount": 158400,
+        "cashback": 0,
+        "note": ""
+      },
+      {
+        "date": "2025-07-08T11:36:19.042Z",
+        "cashback": 3265,
+        "fileData": null,
+        "amount": 65300,
+        "note": ""
+      },
+      {
+        "date": "2025-07-10T12:50:00.944Z",
+        "amount": 131800,
+        "fileData": null,
+        "cashback": 6590,
+        "note": ""
+      },
+      {
+        "date": "2025-07-11T11:41:24.711Z",
+        "cashback": 3830,
+        "amount": 76600,
+        "fileData": null,
+        "note": ""
+      },
+      {
+        "date": "2025-07-14T13:26:57.292Z",
+        "amount": 30800,
+        "note": "",
+        "cashback": 1540,
+        "fileData": null
+      },
+      {
+        "amount": 79400,
+        "cashback": 3970,
+        "note": "",
+        "date": "2025-07-15T12:30:21.479Z",
+        "fileData": null
+      },
+      {
+        "fileData": null,
+        "cashback": 2240,
+        "date": "2025-07-16T10:53:08.692Z",
+        "note": "",
+        "amount": 44800
+      },
+      {
+        "date": "2025-07-17T10:38:53.675Z",
+        "fileData": null,
+        "note": "",
+        "amount": 56100,
+        "cashback": 2805
+      },
+      {
+        "date": "2025-07-18T11:00:22.728Z",
+        "fileData": null,
+        "amount": 27100,
+        "note": "",
+        "cashback": 1355
+      },
+      {
+        "note": "",
+        "cashback": 8695,
+        "fileData": null,
+        "amount": 173900,
+        "date": "2025-07-19T13:38:57.289Z"
+      },
+      {
+        "amount": 121500,
+        "note": "",
+        "fileData": null,
+        "date": "2025-07-23T12:51:34.250Z",
+        "cashback": 6075
+      },
+      {
+        "date": "2025-08-01T11:13:16.318Z",
+        "cashback": 1355,
+        "note": "",
+        "amount": 27100,
+        "fileData": null
+      },
+      {
+        "cashback": 900,
+        "fileData": null,
+        "amount": 18000,
+        "note": "",
+        "date": "2025-08-06T13:19:44.780Z"
+      },
+      {
+        "date": "2025-08-07T11:29:24.258Z",
+        "note": "",
+        "cashback": 1260,
+        "fileData": null,
+        "amount": 25200
+      },
+      {
+        "amount": 55100,
+        "date": "2025-08-11T10:48:11.391Z",
+        "fileData": null,
+        "cashback": 2755,
+        "note": ""
+      },
+      {
+        "fileData": null,
+        "amount": 97200,
+        "note": "",
+        "cashback": 4860,
+        "date": "2025-08-12T11:26:02.522Z"
+      },
+      {
+        "fileData": null,
+        "amount": 185100,
+        "cashback": 9255,
+        "note": "",
+        "date": "2025-08-16T14:09:41.283Z"
+      },
+      {
+        "amount": 21500,
+        "note": "Recorded from POS: Served order",
+        "date": "2025-08-23T12:05:51.313Z",
+        "cashback": 1075
+      },
+      {
+        "amount": 60700,
+        "cashback": 3035,
+        "note": "",
+        "date": "2025-08-26T10:21:31.078Z"
+      },
+      {
+        "date": "2025-08-26T10:22:00.673Z",
+        "note": "",
+        "amount": 26100,
+        "cashback": 1305
+      },
+      {
+        "note": "",
+        "cashback": 3175,
+        "amount": 63500,
+        "date": "2025-08-26T10:22:26.577Z"
+      },
+      {
+        "date": "2025-08-28T06:39:48.800Z",
+        "note": "",
+        "amount": 68200,
+        "cashback": 3410
+      },
+      {
+        "date": "2025-08-28T11:16:51.805Z",
+        "note": "",
+        "amount": 27100,
+        "cashback": 1355
+      },
+      {
+        "date": "2025-09-04T11:20:12.499Z",
+        "amount": 30800,
+        "cashback": 1540,
+        "note": ""
+      },
+      {
+        "amount": 130900,
+        "date": "2025-09-13T12:31:58.019Z",
+        "note": "",
+        "cashback": 6545
+      },
+      {
+        "note": "Recorded from POS: Served order",
+        "amount": 41140,
+        "cashback": 2057,
+        "date": "2025-09-24T10:40:51.955Z"
+      },
+      {
+        "note": "",
+        "cashback": 3875,
+        "amount": 77500,
+        "date": "2025-10-22T11:24:41.521Z"
+      },
+      {
+        "cashback": 4060,
+        "amount": 81200,
+        "date": "2025-10-30T09:12:50.264Z",
+        "note": ""
+      },
+      {
+        "cashback": 7625,
+        "amount": 152500,
+        "note": "",
+        "date": "2025-11-19T12:00:36.838Z"
+      },
+      {
+        "note": "Cashback capped at Rp15.000 today",
+        "date": "2025-11-25T13:12:03.885Z",
+        "cashback": 15000,
+        "amount": 430023
+      },
+      {
+        "note": "",
+        "date": "2025-11-27T12:31:05.121Z",
+        "cashback": 6775,
+        "amount": 135500
+      },
+      {
+        "date": "2025-12-02T11:33:33.999Z",
+        "amount": 19000,
+        "note": "",
+        "cashback": 950
+      },
+      {
+        "cashback": 5525,
+        "amount": 110500,
+        "date": "2025-12-06T11:13:27.347Z",
+        "note": ""
+      },
+      {
+        "note": "",
+        "cashback": 700,
+        "date": "2025-12-09T14:20:27.094Z",
+        "amount": 14000
+      },
+      {
+        "note": "",
+        "cashback": 1625,
+        "amount": 32500,
+        "date": "2025-12-11T11:51:59.609Z"
+      },
+      {
+        "date": "2025-12-13T11:14:49.328Z",
+        "cashback": 1825,
+        "amount": 36500,
+        "note": ""
+      },
+      {
+        "amount": 24500,
+        "date": "2025-12-19T09:19:46.705Z",
+        "cashback": 1225,
+        "note": ""
+      },
+      {
+        "cashback": 2300,
+        "date": "2025-12-24T11:53:19.518Z",
+        "amount": 46000,
+        "note": ""
+      },
+      {
+        "cashback": 1200,
+        "note": "",
+        "amount": 24000,
+        "date": "2025-12-28T14:00:31.657Z"
+      },
+      {
+        "date": "2026-01-02T08:10:08.838Z",
+        "cashback": 1175,
+        "note": "",
+        "amount": 23500
+      },
+      {
+        "cashback": 0,
+        "amount": 150000,
+        "note": "",
+        "date": "2026-01-10T11:21:35.475Z"
+      },
+      {
+        "cashback": 0,
+        "note": "",
+        "date": "2026-01-17T13:33:15.757Z",
+        "amount": 46000
+      },
+      {
+        "date": "2026-01-20T09:31:20.239Z",
+        "amount": 337500,
+        "cashback": 0,
+        "note": ""
+      },
+      {
+        "note": "",
+        "date": "2026-01-29T07:19:17.588Z",
+        "cashback": 0,
+        "amount": 55000
+      },
+      {
+        "date": "2026-04-24T06:12:09.077Z",
+        "amount": 84000,
+        "cashback": 4200,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "1751514469015",
+    "welcomed": true,
+    "ktp": "1271036612980001",
+    "nameLower": "aisha tiona",
+    "phone": "081374525837",
+    "name": "Aisha Tiona",
+    "lastRoomUpgrade": null,
+    "birthdate": "1998-12-26",
+    "email": "aishationa@gmail.com",
+    "roomUpgradeHistory": [],
+    "keywords": [
+      "a",
+      "ai",
+      "ais",
+      "aish",
+      "aisha",
+      "aisha ",
+      "aisha t",
+      "aisha ti",
+      "aisha tio",
+      "aisha tion",
+      "aisha tiona"
+    ],
+    "updatedAt": {
+      "seconds": 1756714662,
+      "nanoseconds": 941000000
+    },
+    "upgradeDate": "2025-07-06T08:48:07.641Z",
+    "redeemablePoints": 55510,
+    "yearlySpend2025": 2147500,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Silver",
+    "monthlySinceUpgrade": 338500,
+    "yearlySinceUpgrade": 378500,
+    "transactions": [
+      {
+        "amount": 462300,
+        "cashback": 0,
+        "note": "",
+        "fileData": null,
+        "date": "2025-07-06T08:46:07.875Z"
+      },
+      {
+        "date": "2025-07-22T02:27:41.374Z",
+        "amount": 22400,
+        "cashback": 1120,
+        "note": "",
+        "fileData": null
+      },
+      {
+        "note": "",
+        "amount": 22400,
+        "fileData": null,
+        "cashback": 1120,
+        "date": "2025-08-06T12:00:45.373Z"
+      },
+      {
+        "date": "2025-08-10T11:50:06.852Z",
+        "fileData": null,
+        "cashback": 6215,
+        "note": "",
+        "amount": 124300
+      },
+      {
+        "fileData": null,
+        "date": "2025-08-11T07:53:24.904Z",
+        "note": "",
+        "amount": 26100,
+        "cashback": 1305
+      },
+      {
+        "note": "",
+        "fileData": null,
+        "date": "2025-08-22T08:31:47.188Z",
+        "amount": 59800,
+        "cashback": 2990
+      },
+      {
+        "amount": 21500,
+        "date": "2025-08-28T06:36:34.260Z",
+        "note": "",
+        "cashback": 0
+      },
+      {
+        "note": "",
+        "amount": 21500,
+        "cashback": 1075,
+        "date": "2025-09-05T06:31:10.931Z"
+      },
+      {
+        "date": "2025-09-13T12:29:17.750Z",
+        "cashback": 3410,
+        "amount": 68200,
+        "note": ""
+      },
+      {
+        "cashback": 6120,
+        "note": "",
+        "date": "2025-09-27T11:18:38.352Z",
+        "amount": 122400
+      },
+      {
+        "date": "2025-09-27T11:19:43.165Z",
+        "note": "",
+        "amount": 27100,
+        "cashback": 1355
+      },
+      {
+        "cashback": 1925,
+        "date": "2025-10-23T11:12:08.759Z",
+        "note": "",
+        "amount": 38500
+      },
+      {
+        "date": "2025-11-02T10:08:13.328Z",
+        "cashback": 3325,
+        "amount": 66500,
+        "note": ""
+      },
+      {
+        "date": "2025-11-02T10:08:57.962Z",
+        "cashback": 1125,
+        "amount": 22500,
+        "note": ""
+      },
+      {
+        "note": "",
+        "amount": 75000,
+        "date": "2025-11-25T13:14:40.955Z",
+        "cashback": 3750
+      },
+      {
+        "date": "2025-12-03T11:25:16.552Z",
+        "amount": 50000,
+        "note": "",
+        "cashback": 2500
+      },
+      {
+        "amount": 23500,
+        "cashback": 1175,
+        "note": "",
+        "date": "2025-12-23T10:32:54.456Z"
+      },
+      {
+        "cashback": 15000,
+        "note": "Cashback capped at Rp15.000 today",
+        "amount": 893500,
+        "date": "2025-12-27T07:41:45.390Z"
+      },
+      {
+        "note": "",
+        "amount": 40000,
+        "cashback": 2000,
+        "date": "2026-01-17T13:34:24.138Z"
+      },
+      {
+        "date": "2026-02-01T13:15:47.234Z",
+        "amount": 338500,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "tierRestoredAt": {
+      "_seconds": 1771185920,
+      "_nanoseconds": 696000000
+    },
+    "tier": "Silver"
+  },
+  {
+    "id": "1751514509634",
+    "upgradeDate": "2025-07-13T10:05:24.681Z",
+    "ktp": "1271035307760002",
+    "name": "Ti Hua",
+    "email": "wawashin1234@gmail.com",
+    "welcomed": true,
+    "lastRoomUpgrade": null,
+    "nameLower": "ti hua",
+    "birthdate": "1976-07-13",
+    "roomUpgradeHistory": [],
+    "phone": "085373705500",
+    "keywords": [
+      "t",
+      "ti",
+      "ti ",
+      "ti h",
+      "ti hu",
+      "ti hua"
+    ],
+    "updatedAt": {
+      "seconds": 1756714695,
+      "nanoseconds": 380000000
+    },
+    "redeemablePoints": 314905,
+    "monthlySinceUpgrade": 248000,
+    "yearlySinceUpgrade": 248000,
+    "transactions": [
+      {
+        "fileData": null,
+        "amount": 221700,
+        "date": "2025-07-04T08:09:47.800Z",
+        "cashback": 0,
+        "note": ""
+      },
+      {
+        "fileData": null,
+        "note": "",
+        "cashback": 0,
+        "date": "2025-07-07T07:12:13.444Z",
+        "amount": 287100
+      },
+      {
+        "cashback": 3575,
+        "fileData": null,
+        "amount": 71500,
+        "date": "2025-07-08T10:22:42.790Z",
+        "note": ""
+      },
+      {
+        "amount": 38300,
+        "fileData": null,
+        "cashback": 1915,
+        "date": "2025-07-08T10:23:36.366Z",
+        "note": ""
+      },
+      {
+        "date": "2025-07-09T11:13:22.566Z",
+        "note": "",
+        "fileData": null,
+        "cashback": 6825,
+        "amount": 136500
+      },
+      {
+        "fileData": null,
+        "amount": 575000,
+        "note": "Cashback capped at Rp15.000 today",
+        "date": "2025-07-12T09:27:15.836Z",
+        "cashback": 15000
+      },
+      {
+        "amount": 1277200,
+        "date": "2025-07-13T10:01:02.893Z",
+        "note": "Cashback capped at Rp15.000 today",
+        "fileData": null,
+        "cashback": 15000
+      },
+      {
+        "date": "2025-07-14T11:39:16.864Z",
+        "cashback": 5675,
+        "amount": 113500,
+        "note": "",
+        "fileData": null
+      },
+      {
+        "cashback": 2990,
+        "fileData": null,
+        "note": "",
+        "amount": 59800,
+        "date": "2025-07-17T09:36:10.050Z"
+      },
+      {
+        "cashback": 3915,
+        "fileData": null,
+        "date": "2025-07-19T09:00:19.361Z",
+        "amount": 78300,
+        "note": ""
+      },
+      {
+        "date": "2025-07-22T10:22:41.214Z",
+        "cashback": 4220,
+        "fileData": null,
+        "note": "",
+        "amount": 84400
+      },
+      {
+        "fileData": null,
+        "note": "",
+        "date": "2025-07-28T09:18:08.557Z",
+        "amount": 81800,
+        "cashback": 4090
+      },
+      {
+        "fileData": null,
+        "date": "2025-07-29T11:22:20.050Z",
+        "amount": 217300,
+        "note": "",
+        "cashback": 10865
+      },
+      {
+        "date": "2025-07-31T10:55:55.320Z",
+        "fileData": null,
+        "amount": 54500,
+        "cashback": 2725,
+        "note": ""
+      },
+      {
+        "note": "",
+        "date": "2025-08-02T05:07:42.493Z",
+        "cashback": 4310,
+        "amount": 86200,
+        "fileData": null
+      },
+      {
+        "date": "2025-08-04T11:09:37.205Z",
+        "amount": 46600,
+        "cashback": 2330,
+        "fileData": null,
+        "note": ""
+      },
+      {
+        "amount": 88800,
+        "date": "2025-08-07T10:48:23.286Z",
+        "note": "",
+        "cashback": 4440,
+        "fileData": null
+      },
+      {
+        "amount": 76500,
+        "fileData": null,
+        "date": "2025-08-07T11:42:56.575Z",
+        "cashback": 3825,
+        "note": ""
+      },
+      {
+        "fileData": null,
+        "date": "2025-08-11T09:03:00.936Z",
+        "note": "",
+        "amount": 134600,
+        "cashback": 6730
+      },
+      {
+        "date": "2025-08-16T14:07:24.362Z",
+        "cashback": 3450,
+        "fileData": null,
+        "note": "",
+        "amount": 69000
+      },
+      {
+        "fileData": null,
+        "amount": 88800,
+        "note": "",
+        "cashback": 4440,
+        "date": "2025-08-17T06:51:35.161Z"
+      },
+      {
+        "cashback": 4970,
+        "amount": 99400,
+        "fileData": null,
+        "date": "2025-08-22T08:30:14.912Z",
+        "note": ""
+      },
+      {
+        "note": "",
+        "amount": 190900,
+        "date": "2025-08-23T12:21:20.152Z",
+        "cashback": 9545
+      },
+      {
+        "note": "",
+        "date": "2025-08-26T11:01:47.665Z",
+        "cashback": 6115,
+        "amount": 122300
+      },
+      {
+        "cashback": 6290,
+        "note": "",
+        "date": "2025-08-29T04:27:40.215Z",
+        "amount": 125800
+      },
+      {
+        "date": "2025-09-06T15:17:25.478Z",
+        "amount": 175100,
+        "note": "",
+        "cashback": 8755
+      },
+      {
+        "date": "2025-09-25T07:11:11.141Z",
+        "cashback": 7090,
+        "note": "",
+        "amount": 141800
+      },
+      {
+        "cashback": 3165,
+        "date": "2025-09-27T08:38:52.835Z",
+        "amount": 63300,
+        "note": ""
+      },
+      {
+        "cashback": 5540,
+        "note": "",
+        "amount": 110800,
+        "date": "2025-10-03T07:35:45.626Z"
+      },
+      {
+        "amount": 16700,
+        "date": "2025-10-04T10:46:03.209Z",
+        "note": "",
+        "cashback": 835
+      },
+      {
+        "amount": 212000,
+        "note": "",
+        "cashback": 10600,
+        "date": "2025-10-07T09:57:52.007Z"
+      },
+      {
+        "note": "",
+        "cashback": 14700,
+        "amount": 294000,
+        "date": "2025-10-23T04:54:26.344Z"
+      },
+      {
+        "cashback": 5950,
+        "amount": 119000,
+        "date": "2025-10-24T12:25:12.730Z",
+        "note": ""
+      },
+      {
+        "note": "",
+        "cashback": 9100,
+        "date": "2025-10-25T10:46:47.233Z",
+        "amount": 182000
+      },
+      {
+        "amount": 233000,
+        "note": "",
+        "date": "2025-10-30T04:50:30.443Z",
+        "cashback": 11650
+      },
+      {
+        "date": "2025-11-05T11:06:32.447Z",
+        "note": "",
+        "amount": 134500,
+        "cashback": 6725
+      },
+      {
+        "cashback": 6875,
+        "amount": 137500,
+        "note": "",
+        "date": "2025-11-08T11:45:49.220Z"
+      },
+      {
+        "amount": 272000,
+        "date": "2025-11-15T11:02:22.875Z",
+        "note": "",
+        "cashback": 13600
+      },
+      {
+        "date": "2025-11-18T10:46:08.111Z",
+        "note": "",
+        "amount": 227000,
+        "cashback": 11350
+      },
+      {
+        "date": "2025-11-20T11:15:33.845Z",
+        "cashback": 10000,
+        "note": "",
+        "amount": 200000
+      },
+      {
+        "cashback": 1900,
+        "note": "",
+        "date": "2025-11-21T11:11:28.793Z",
+        "amount": 38000
+      },
+      {
+        "date": "2025-11-22T11:26:48.947Z",
+        "amount": 150000,
+        "cashback": 7500,
+        "note": ""
+      },
+      {
+        "note": "",
+        "amount": 55500,
+        "date": "2025-11-26T11:11:17.593Z",
+        "cashback": 2775
+      },
+      {
+        "date": "2025-12-02T11:38:03.805Z",
+        "note": "",
+        "cashback": 3075,
+        "amount": 61500
+      },
+      {
+        "note": "",
+        "cashback": 6250,
+        "date": "2025-12-11T11:53:22.431Z",
+        "amount": 125000
+      },
+      {
+        "note": "",
+        "amount": 139000,
+        "date": "2025-12-19T08:39:35.691Z",
+        "cashback": 6950
+      },
+      {
+        "note": "",
+        "amount": 50000,
+        "cashback": 2500,
+        "date": "2025-12-20T08:04:11.658Z"
+      },
+      {
+        "cashback": 3305,
+        "note": "",
+        "amount": 66100,
+        "date": "2025-12-24T09:50:27.710Z"
+      },
+      {
+        "note": "",
+        "amount": 134500,
+        "cashback": 6725,
+        "date": "2025-12-30T11:34:22.875Z"
+      },
+      {
+        "date": "2025-12-31T10:53:31.652Z",
+        "cashback": 5425,
+        "amount": 108500,
+        "note": ""
+      },
+      {
+        "cashback": 9325,
+        "date": "2026-01-07T11:02:24.051Z",
+        "note": "",
+        "amount": 186500
+      },
+      {
+        "date": "2026-01-08T10:52:00.245Z",
+        "amount": 61500,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "tierRestoredAt": {
+      "_seconds": 1768640866,
+      "_nanoseconds": 711000000
+    },
+    "tier": "Gold",
+    "yearlySpend2025": 7872600,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Gold"
+  },
+  {
+    "id": "1751514551090",
+    "phone": "085372772111",
+    "lastRoomUpgrade": null,
+    "ktp": "1271031305740002",
+    "roomUpgradeHistory": [],
+    "name": "Hendri",
+    "email": "hendri.bhm@yahoo.com",
+    "birthdate": "1974-05-13",
+    "nameLower": "hendri",
+    "welcomed": true,
+    "keywords": [
+      "h",
+      "he",
+      "hen",
+      "hend",
+      "hendr",
+      "hendri"
+    ],
+    "updatedAt": {
+      "seconds": 1756714679,
+      "nanoseconds": 159000000
+    },
+    "upgradeDate": "2025-07-13T10:00:35.987Z",
+    "yearlySpend2025": 7507600,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Gold",
+    "tierRestoredAt": {
+      "_seconds": 1771185920,
+      "_nanoseconds": 696000000
+    },
+    "tier": "Gold",
+    "redeemablePoints": 267739,
+    "monthlySinceUpgrade": 257196,
+    "yearlySinceUpgrade": 1340496,
+    "transactions": [
+      {
+        "cashback": 0,
+        "amount": 44500,
+        "fileData": null,
+        "date": "2025-07-04T08:23:29.867Z",
+        "note": ""
+      },
+      {
+        "amount": 111800,
+        "cashback": 0,
+        "fileData": null,
+        "note": "",
+        "date": "2025-07-08T10:19:02.708Z"
+      },
+      {
+        "note": "",
+        "date": "2025-07-10T09:45:55.916Z",
+        "fileData": null,
+        "cashback": 0,
+        "amount": 65300
+      },
+      {
+        "note": "",
+        "date": "2025-07-12T03:24:18.272Z",
+        "amount": 89100,
+        "cashback": 0,
+        "fileData": null
+      },
+      {
+        "cashback": 15000,
+        "amount": 1321100,
+        "fileData": null,
+        "date": "2025-07-13T09:57:41.932Z",
+        "note": "Cashback capped at Rp15.000 today"
+      },
+      {
+        "cashback": 790,
+        "amount": 15800,
+        "fileData": null,
+        "note": "",
+        "date": "2025-07-14T14:29:53.625Z"
+      },
+      {
+        "fileData": null,
+        "amount": 155700,
+        "cashback": 7785,
+        "note": "",
+        "date": "2025-07-16T15:02:26.250Z"
+      },
+      {
+        "date": "2025-07-16T15:02:26.250Z",
+        "note": "",
+        "amount": 155700,
+        "cashback": 7785,
+        "fileData": null
+      },
+      {
+        "date": "2025-07-18T10:56:32.947Z",
+        "note": "",
+        "fileData": null,
+        "amount": 15800,
+        "cashback": 790
+      },
+      {
+        "amount": 76500,
+        "cashback": 3825,
+        "fileData": null,
+        "note": "",
+        "date": "2025-07-28T07:32:07.222Z"
+      },
+      {
+        "note": "",
+        "date": "2025-08-01T11:07:27.271Z",
+        "cashback": 7170,
+        "amount": 143400,
+        "fileData": null
+      },
+      {
+        "note": "",
+        "date": "2025-08-04T11:10:34.313Z",
+        "fileData": null,
+        "cashback": 3165,
+        "amount": 63300
+      },
+      {
+        "cashback": 15310,
+        "amount": 306200,
+        "fileData": null,
+        "note": "",
+        "date": "2025-08-15T10:33:19.992Z"
+      },
+      {
+        "fileData": null,
+        "amount": 15800,
+        "cashback": 790,
+        "date": "2025-08-15T11:32:10.827Z",
+        "note": ""
+      },
+      {
+        "fileData": null,
+        "cashback": 14825,
+        "amount": 296500,
+        "date": "2025-08-22T08:27:45.201Z",
+        "note": ""
+      },
+      {
+        "date": "2025-08-28T06:35:08.825Z",
+        "note": "",
+        "cashback": 1845,
+        "amount": 36900
+      },
+      {
+        "amount": 59800,
+        "cashback": 2990,
+        "note": "",
+        "date": "2025-08-28T06:41:20.510Z"
+      },
+      {
+        "cashback": 2725,
+        "amount": 54500,
+        "note": "",
+        "date": "2025-09-05T06:37:35.743Z"
+      },
+      {
+        "date": "2025-09-06T11:54:46.527Z",
+        "note": "",
+        "cashback": 2375,
+        "amount": 47500
+      },
+      {
+        "date": "2025-09-25T03:19:52.617Z",
+        "note": "",
+        "amount": 346700,
+        "cashback": 17335
+      },
+      {
+        "cashback": 5060,
+        "amount": 101200,
+        "date": "2025-10-05T09:55:32.376Z",
+        "note": ""
+      },
+      {
+        "note": "",
+        "date": "2025-10-07T09:39:40.697Z",
+        "amount": 134800,
+        "cashback": 6740
+      },
+      {
+        "amount": 257000,
+        "cashback": 12850,
+        "date": "2025-10-21T10:45:50.283Z",
+        "note": ""
+      },
+      {
+        "cashback": 1925,
+        "amount": 38500,
+        "note": "",
+        "date": "2025-10-23T09:54:57.233Z"
+      },
+      {
+        "amount": 200800,
+        "cashback": 10040,
+        "note": "",
+        "date": "2025-11-25T13:11:11.633Z"
+      },
+      {
+        "cashback": 4745,
+        "amount": 94900,
+        "date": "2025-11-26T10:52:01.427Z",
+        "note": ""
+      },
+      {
+        "note": "",
+        "date": "2025-11-27T10:45:41.701Z",
+        "amount": 72000,
+        "cashback": 3600
+      },
+      {
+        "date": "2025-12-07T11:43:37.557Z",
+        "note": "Cashback capped at Rp30.000 today",
+        "amount": 1573500,
+        "cashback": 30000
+      },
+      {
+        "cashback": 3475,
+        "amount": 69500,
+        "note": "",
+        "date": "2025-12-20T03:07:30.168Z"
+      },
+      {
+        "note": "",
+        "date": "2025-12-24T11:40:54.080Z",
+        "amount": 86000,
+        "cashback": 4300
+      },
+      {
+        "note": "Cashback capped at Rp30.000 today",
+        "date": "2025-12-28T13:59:49.048Z",
+        "cashback": 30000,
+        "amount": 1457500
+      },
+      {
+        "date": "2026-01-08T10:53:45.206Z",
+        "note": "",
+        "amount": 79000,
+        "cashback": 3950
+      },
+      {
+        "date": "2026-01-17T13:28:42.757Z",
+        "note": "",
+        "cashback": 2190,
+        "amount": 43800
+      },
+      {
+        "note": "",
+        "date": "2026-01-17T13:30:29.710Z",
+        "amount": 102000,
+        "cashback": 0
+      },
+      {
+        "note": "",
+        "date": "2026-01-20T02:59:35.799Z",
+        "amount": 44000,
+        "cashback": 0
+      },
+      {
+        "amount": 79000,
+        "cashback": 0,
+        "date": "2026-01-28T13:02:15.866Z",
+        "note": ""
+      },
+      {
+        "cashback": 5800,
+        "amount": 116000,
+        "note": "",
+        "date": "2026-02-01T10:46:12.880Z"
+      },
+      {
+        "date": "2026-02-04T02:16:00.548Z",
+        "note": "",
+        "cashback": 0,
+        "amount": 105500
+      },
+      {
+        "date": "2026-02-18T04:55:28.253Z",
+        "note": "",
+        "amount": 514000,
+        "cashback": 25700
+      },
+      {
+        "cashback": 12725,
+        "amount": 254500,
+        "date": "2026-05-09T11:49:44.835Z",
+        "note": ""
+      },
+      {
+        "date": "2026-05-26T04:31:50.549Z",
+        "amount": 2696,
+        "cashback": 134,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "1751514658908",
+    "upgradeDate": null,
+    "email": "fatimah09@gmail.com",
+    "redeemablePoints": 0,
+    "phone": "082161678246",
+    "lastRoomUpgrade": null,
+    "ktp": "1271024901950004",
+    "tier": "Bronze",
+    "welcomed": true,
+    "nameLower": "fatimah",
+    "birthdate": "1995-01-09",
+    "name": "Fatimah",
+    "roomUpgradeHistory": [],
+    "transactions": [
+      {
+        "note": "",
+        "date": "2025-07-13T14:43:38.065Z",
+        "amount": 23700,
+        "fileData": null,
+        "cashback": 0
+      },
+      {
+        "fileData": null,
+        "cashback": 0,
+        "note": "",
+        "amount": 23700,
+        "date": "2025-07-30T08:02:49.367Z"
+      },
+      {
+        "date": "2025-12-14T06:08:44.288Z",
+        "amount": 48500,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "monthlySinceUpgrade": 48500,
+    "yearlySinceUpgrade": 95900
+  },
+  {
+    "id": "1751514850646",
+    "phone": "081275184984",
+    "name": "Agnes Tanjung",
+    "welcomed": true,
+    "email": "agnestanjung01@gmail.com",
+    "ktp": "1408046910950005",
+    "tier": "Bronze",
+    "transactions": [
+      {
+        "note": "",
+        "cashback": 0,
+        "date": "2025-08-01T11:04:01.497Z",
+        "fileData": null,
+        "amount": 33600
+      },
+      {
+        "date": "2025-08-09T09:17:49.379Z",
+        "amount": 32600,
+        "cashback": 0,
+        "note": "",
+        "fileData": null
+      }
+    ],
+    "nameLower": "agnes tanjung",
+    "redeemablePoints": 0,
+    "lastRoomUpgrade": null,
+    "upgradeDate": null,
+    "birthdate": "1995-10-29",
+    "roomUpgradeHistory": [],
+    "monthlySinceUpgrade": 66200,
+    "yearlySinceUpgrade": 66200
+  },
+  {
+    "id": "1751514933042",
+    "name": "Fatiah Sabrina",
+    "nameLower": "fatiah sabrina",
+    "birthdate": "2003-09-15",
+    "phone": "081990145015",
+    "email": "fatiahsabrina6@gmail.com",
+    "ktp": "1271215509030001",
+    "tier": "Bronze",
+    "transactions": [],
+    "lastRoomUpgrade": null,
+    "upgradeDate": null,
+    "yearlySinceUpgrade": 0,
+    "welcomed": true,
+    "monthlySinceUpgrade": 0
+  },
+  {
+    "id": "1751515053159",
+    "name": "Laura Noviani",
+    "nameLower": "laura noviani",
+    "birthdate": "1998-10-31",
+    "phone": "085370361602",
+    "email": "marbun.laura@gmail.com",
+    "ktp": "1271037110890001",
+    "tier": "Bronze",
+    "transactions": [],
+    "lastRoomUpgrade": null,
+    "upgradeDate": null,
+    "yearlySinceUpgrade": 0,
+    "welcomed": true,
+    "monthlySinceUpgrade": 0
+  },
+  {
+    "id": "1751515165650",
+    "roomUpgradeHistory": [],
+    "redeemablePoints": 0,
+    "lastRoomUpgrade": null,
+    "nameLower": "anggie afdila",
+    "phone": "081260123728",
+    "name": "Anggie Afdila",
+    "transactions": [
+      {
+        "fileData": null,
+        "amount": 6900,
+        "date": "2025-07-03T10:58:38.284Z",
+        "note": "",
+        "cashback": 0
+      },
+      {
+        "fileData": null,
+        "date": "2025-07-26T05:37:27.335Z",
+        "note": "",
+        "amount": 6900,
+        "cashback": 0
+      },
+      {
+        "date": "2025-08-01T11:04:39.112Z",
+        "amount": 6900,
+        "cashback": 0,
+        "note": "",
+        "fileData": null
+      }
+    ],
+    "upgradeDate": null,
+    "ktp": "1271064906040003",
+    "birthdate": "2004-06-09",
+    "email": "anggieafdila0906@gmail.com",
+    "tier": "Bronze",
+    "welcomed": true,
+    "monthlySinceUpgrade": 6900,
+    "yearlySinceUpgrade": 20700
+  },
+  {
+    "id": "1751515451542",
+    "roomUpgradeHistory": [],
+    "upgradeDate": null,
+    "birthdate": "1980-09-30",
+    "name": "Tati Astari",
+    "lastRoomUpgrade": null,
+    "email": "tati.astari@yahoo.co.id",
+    "nameLower": "tati astari",
+    "phone": "085275888568",
+    "welcomed": true,
+    "ktp": "1207247009800007",
+    "keywords": [
+      "t",
+      "ta",
+      "tat",
+      "tati",
+      "tati ",
+      "tati a",
+      "tati as",
+      "tati ast",
+      "tati asta",
+      "tati astar",
+      "tati astari"
+    ],
+    "redeemablePoints": 28675,
+    "monthlySinceUpgrade": 19000,
+    "yearlySinceUpgrade": 19000,
+    "transactions": [
+      {
+        "cashback": 0,
+        "fileData": null,
+        "note": "",
+        "amount": 6900,
+        "date": "2025-07-04T11:04:15.102Z"
+      },
+      {
+        "note": "",
+        "date": "2025-08-07T04:46:55.070Z",
+        "fileData": null,
+        "cashback": 0,
+        "amount": 17800
+      },
+      {
+        "note": "",
+        "cashback": 0,
+        "amount": 1670800,
+        "date": "2025-09-30T11:32:31.599Z"
+      },
+      {
+        "note": "",
+        "amount": 242000,
+        "date": "2025-10-02T06:49:20.518Z",
+        "cashback": 12100
+      },
+      {
+        "note": "",
+        "date": "2025-10-23T09:23:49.342Z",
+        "cashback": 900,
+        "amount": 18000
+      },
+      {
+        "cashback": 3275,
+        "note": "",
+        "date": "2025-10-25T09:50:04.069Z",
+        "amount": 65500
+      },
+      {
+        "note": "",
+        "cashback": 1175,
+        "amount": 23500,
+        "date": "2025-11-05T11:11:39.174Z"
+      },
+      {
+        "cashback": 2800,
+        "date": "2025-11-29T06:36:03.152Z",
+        "note": "",
+        "amount": 56000
+      },
+      {
+        "note": "",
+        "amount": 112000,
+        "date": "2025-12-12T07:44:20.855Z",
+        "cashback": 5600
+      },
+      {
+        "date": "2025-12-30T09:39:10.567Z",
+        "amount": 37500,
+        "note": "",
+        "cashback": 1875
+      },
+      {
+        "date": "2026-01-09T06:03:49.158Z",
+        "amount": 19000,
+        "cashback": 950,
+        "note": ""
+      }
+    ],
+    "updatedAt": {
+      "seconds": 1759317216,
+      "nanoseconds": 921000000
+    },
+    "tierRestoredAt": {
+      "_seconds": 1768640866,
+      "_nanoseconds": 711000000
+    },
+    "tier": "Silver",
+    "yearlySpend2025": 2250000,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Silver"
+  },
+  {
+    "id": "1751516578888",
+    "welcomed": true,
+    "email": "anatasya.trisna@gmail.com",
+    "redeemablePoints": 0,
+    "nameLower": "trisna anatasya",
+    "lastRoomUpgrade": null,
+    "roomUpgradeHistory": [],
+    "name": "Trisna Anatasya",
+    "upgradeDate": null,
+    "tier": "Bronze",
+    "ktp": "1106074712940004",
+    "phone": "081360048432",
+    "birthdate": "1995-12-07",
+    "monthlySinceUpgrade": 104000,
+    "yearlySinceUpgrade": 154000,
+    "transactions": [
+      {
+        "amount": 57400,
+        "cashback": 0,
+        "note": "",
+        "fileData": null,
+        "date": "2025-07-03T07:14:37.197Z"
+      },
+      {
+        "note": "",
+        "cashback": 0,
+        "amount": 29000,
+        "date": "2025-07-05T11:38:17.433Z",
+        "fileData": null
+      },
+      {
+        "note": "",
+        "amount": 105800,
+        "fileData": null,
+        "cashback": 0,
+        "date": "2025-07-17T06:14:19.551Z"
+      },
+      {
+        "fileData": null,
+        "note": "",
+        "date": "2025-08-07T11:27:10.478Z",
+        "cashback": 0,
+        "amount": 39600
+      },
+      {
+        "date": "2025-08-16T03:51:30.997Z",
+        "amount": 39600,
+        "note": "",
+        "fileData": null,
+        "cashback": 0
+      },
+      {
+        "note": "",
+        "date": "2025-11-30T09:31:04.763Z",
+        "cashback": 0,
+        "amount": 108000
+      },
+      {
+        "cashback": 0,
+        "date": "2025-12-02T11:34:11.092Z",
+        "amount": 54000,
+        "note": ""
+      },
+      {
+        "amount": 40000,
+        "note": "",
+        "cashback": 0,
+        "date": "2025-12-23T11:31:10.961Z"
+      },
+      {
+        "date": "2025-12-23T11:34:22.029Z",
+        "cashback": 0,
+        "note": "",
+        "amount": 210000
+      },
+      {
+        "cashback": 0,
+        "note": "",
+        "date": "2026-01-20T05:36:36.778Z",
+        "amount": 50000
+      },
+      {
+        "date": "2026-02-04T02:14:55.100Z",
+        "amount": 104000,
+        "cashback": 0,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "1751522261101",
+    "ktp": "1271122008040001",
+    "birthdate": "2004-08-20",
+    "lastRoomUpgrade": null,
+    "redeemablePoints": 0,
+    "welcomed": true,
+    "email": "anwarevandwy@gmail.com",
+    "phone": "089656871000",
+    "roomUpgradeHistory": [],
+    "upgradeDate": null,
+    "nameLower": "evan dwy anwar",
+    "name": "Evan Dwy Anwar",
+    "tier": "Bronze",
+    "monthlySinceUpgrade": 43500,
+    "yearlySinceUpgrade": 43500,
+    "transactions": [
+      {
+        "note": "",
+        "cashback": 0,
+        "date": "2025-08-02T05:51:16.594Z",
+        "fileData": null,
+        "amount": 14800
+      },
+      {
+        "date": "2026-01-16T13:22:37.266Z",
+        "amount": 43500,
+        "cashback": 0,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "1752232707559",
+    "birthdate": "1997-12-05",
+    "ktp": "1206024512970001",
+    "lastRoomUpgrade": null,
+    "nameLower": "reva cantik",
+    "welcomed": true,
+    "name": "Reva cantik",
+    "phone": "085359238244",
+    "email": "revayohanasinuhaji@gmail.com",
+    "transactions": [
+      {
+        "date": "2025-07-11T11:21:00.750Z",
+        "amount": 23700,
+        "cashback": 0,
+        "note": "",
+        "fileData": null
+      }
+    ],
+    "upgradeDate": null,
+    "roomUpgradeHistory": [],
+    "redeemablePoints": 0,
+    "tier": "Bronze",
+    "monthlySinceUpgrade": 0,
+    "yearlySinceUpgrade": 23700
+  },
+  {
+    "id": "1753437142089",
+    "welcomed": true,
+    "upgradeDate": null,
+    "birthdate": "1986-01-03",
+    "phone": "081396116201",
+    "ktp": "1271194301860002",
+    "email": "capri_mint@yahoo.com",
+    "nameLower": "amy",
+    "name": "Amy",
+    "lastRoomUpgrade": null,
+    "roomUpgradeHistory": [],
+    "redeemablePoints": 0,
+    "tier": "Bronze",
+    "transactions": [
+      {
+        "cashback": 0,
+        "date": "2025-07-25T09:53:46.838Z",
+        "note": "",
+        "fileData": null,
+        "amount": 42500
+      },
+      {
+        "date": "2025-09-23T07:05:45.617Z",
+        "note": "",
+        "cashback": 0,
+        "amount": 114800
+      },
+      {
+        "amount": 116000,
+        "note": "",
+        "cashback": 0,
+        "date": "2025-10-02T13:49:03.503Z"
+      }
+    ],
+    "monthlySinceUpgrade": 116000,
+    "yearlySinceUpgrade": 273300
+  },
+  {
+    "id": "1753588473463",
+    "phone": "082120096644",
+    "lastRoomUpgrade": null,
+    "welcomed": true,
+    "ktp": "1214052503940001",
+    "birthdate": "1994-03-25",
+    "upgradeDate": null,
+    "name": "Kurniawan Garamba",
+    "nameLower": "kurniawan garamba",
+    "email": "kurniawangarambax@gmail.com",
+    "roomUpgradeHistory": [],
+    "redeemablePoints": 0,
+    "tier": "Bronze",
+    "transactions": [
+      {
+        "note": "",
+        "amount": 150500,
+        "date": "2025-07-27T03:54:45.757Z",
+        "fileData": null,
+        "cashback": 0
+      },
+      {
+        "date": "2025-09-01T04:33:19.392Z",
+        "amount": 21700,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "monthlySinceUpgrade": 21700,
+    "yearlySinceUpgrade": 172200
+  },
+  {
+    "id": "1753798322403",
+    "ktp": "1271051502920001",
+    "name": "Steven",
+    "birthdate": "1992-02-15",
+    "roomUpgradeHistory": [],
+    "lastRoomUpgrade": null,
+    "email": "steven.henk@gmail.com",
+    "nameLower": "steven",
+    "welcomed": true,
+    "phone": "01973117576",
+    "upgradeDate": "2025-08-03T07:38:59.401Z",
+    "redeemablePoints": 34645,
+    "monthlySinceUpgrade": 102000,
+    "yearlySinceUpgrade": 102000,
+    "transactions": [
+      {
+        "cashback": 0,
+        "fileData": null,
+        "date": "2025-07-30T06:52:08.184Z",
+        "note": "",
+        "amount": 217800
+      },
+      {
+        "fileData": null,
+        "amount": 685000,
+        "note": "",
+        "cashback": 0,
+        "date": "2025-08-03T07:38:31.047Z"
+      },
+      {
+        "date": "2025-08-12T11:07:09.285Z",
+        "note": "",
+        "cashback": 1585,
+        "fileData": null,
+        "amount": 31700
+      },
+      {
+        "cashback": 3785,
+        "amount": 75700,
+        "note": "",
+        "fileData": null,
+        "date": "2025-08-16T05:06:49.419Z"
+      },
+      {
+        "amount": 105000,
+        "date": "2025-10-01T05:25:08.810Z",
+        "note": "",
+        "cashback": 5250
+      },
+      {
+        "date": "2025-11-02T10:05:32.587Z",
+        "note": "Cashback capped at Rp15.000 today",
+        "amount": 727500,
+        "cashback": 15000
+      },
+      {
+        "note": "",
+        "cashback": 3925,
+        "date": "2025-12-20T08:04:59.671Z",
+        "amount": 78500
+      },
+      {
+        "date": "2026-01-17T13:33:51.246Z",
+        "amount": 102000,
+        "cashback": 5100,
+        "note": ""
+      }
+    ],
+    "tierRestoredAt": {
+      "_seconds": 1769677732,
+      "_nanoseconds": 544000000
+    },
+    "tier": "Silver",
+    "yearlySpend2025": 1921200,
+    "tierRestoredFromYear": 2025,
+    "lastKnownTier": "Silver"
+  },
+  {
+    "id": "1754030739431",
+    "redeemablePoints": 0,
+    "transactions": [
+      {
+        "amount": 32600,
+        "note": "",
+        "cashback": 0,
+        "date": "2025-08-08T02:44:17.511Z",
+        "fileData": null
+      },
+      {
+        "fileData": null,
+        "cashback": 0,
+        "date": "2025-08-09T09:16:46.173Z",
+        "note": "",
+        "amount": 32600
+      },
+      {
+        "fileData": null,
+        "date": "2025-08-12T11:14:25.019Z",
+        "amount": 32600,
+        "cashback": 0,
+        "note": ""
+      },
+      {
+        "date": "2025-08-12T11:15:13.610Z",
+        "amount": 32600,
+        "cashback": 0,
+        "note": "",
+        "fileData": null
+      }
+    ],
+    "name": "Fenny",
+    "phone": "081268858677",
+    "lastRoomUpgrade": null,
+    "upgradeDate": null,
+    "ktp": "1271110712700002",
+    "email": "",
+    "birthdate": "1970-12-07",
+    "welcomed": true,
+    "roomUpgradeHistory": [],
+    "nameLower": "fenny",
+    "tier": "Bronze",
+    "monthlySinceUpgrade": 130400,
+    "yearlySinceUpgrade": 130400
+  },
+  {
+    "id": "1754384910979",
+    "lastRoomUpgrade": null,
+    "phone": "082160999016",
+    "nameLower": "tumpal afrianto",
+    "name": "Tumpal Afrianto",
+    "ktp": "1216060904870002",
+    "welcomed": true,
+    "roomUpgradeHistory": [],
+    "birthdate": "1987-04-09",
+    "email": "tumpalsilaen00@gmail.com",
+    "upgradeDate": "2025-08-05T09:12:43.921Z",
+    "tier": "Bronze",
+    "redeemablePoints": 66250,
+    "monthlySinceUpgrade": 252000,
+    "yearlySinceUpgrade": 252000,
+    "transactions": [
+      {
+        "cashback": 0,
+        "amount": 625600,
+        "date": "2025-08-05T09:10:54.119Z",
+        "fileData": null,
+        "note": ""
+      },
+      {
+        "amount": 272000,
+        "cashback": 13600,
+        "note": "",
+        "date": "2025-08-12T11:06:12.213Z",
+        "fileData": null
+      },
+      {
+        "fileData": null,
+        "date": "2025-08-22T08:29:12.988Z",
+        "amount": 444100,
+        "note": "Cashback capped at Rp15.000 today",
+        "cashback": 15000
+      },
+      {
+        "note": "",
+        "date": "2025-09-01T10:33:19.488Z",
+        "amount": 201000,
+        "cashback": 10050
+      },
+      {
+        "amount": 1004100,
+        "cashback": 15000,
+        "note": "Cashback capped at Rp15.000 today",
+        "date": "2025-10-03T04:40:10.048Z"
+      },
+      {
+        "date": "2026-03-29T05:00:17.101Z",
+        "amount": 252000,
+        "cashback": 12600,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "1758610427507",
+    "spendingSinceUpgrade": 0,
+    "redeemablePoints": 0,
+    "upgradeDate": null,
+    "welcomed": true,
+    "nameLower": "aa",
+    "discountRate": 0.1,
+    "tier": "Classic",
+    "birthdate": "2000-11-28",
+    "phone": "1",
+    "name": "aa",
+    "lastRoomUpgrade": null,
+    "ktp": null,
+    "email": "albopilosum2@gmail.com",
+    "yearlySinceUpgrade": 0,
+    "taxRate": 0.1,
+    "monthlySinceUpgrade": 0,
+    "roomUpgradeHistory": [],
+    "createdAt": {
+      "seconds": 1758610428,
+      "nanoseconds": 146000000
+    }
+  },
+  {
+    "id": "1759480487370",
+    "spendingSinceUpgrade": 0,
+    "lastRoomUpgrade": null,
+    "roomUpgradeHistory": [],
+    "phone": "081268656959",
+    "ktp": null,
+    "taxRate": 0.1,
+    "upgradeDate": null,
+    "name": "Haikal",
+    "tier": "Classic",
+    "discountRate": 0.1,
+    "nameLower": "haikal",
+    "email": "haikall170720@gmail.com",
+    "monthlySinceUpgrade": 0,
+    "redeemablePoints": 0,
+    "welcomed": true,
+    "birthdate": "2003-05-08",
+    "yearlySinceUpgrade": 0,
+    "createdAt": {
+      "seconds": 1759480487,
+      "nanoseconds": 854000000
+    }
+  },
+  {
+    "id": "1760418951133",
+    "birthdate": "2025-10-14",
+    "email": "afizaaulia0909@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "bagus Maulana",
+    "nameLower": "bagus maulana",
+    "phone": "081268459461",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "seconds": 1760418951,
+      "nanoseconds": 949000000
+    }
+  },
+  {
+    "id": "1760527973255",
+    "birthdate": "2004-07-07",
+    "email": "nuzul311094@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "Indah pratiwi",
+    "nameLower": "indah pratiwi",
+    "phone": "082366468334",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "seconds": 1760527973,
+      "nanoseconds": 670000000
+    }
+  },
+  {
+    "id": "1760681005850",
+    "birthdate": "2002-11-02",
+    "email": "yeshuanoahv@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "Yeshua Noah",
+    "nameLower": "yeshua noah",
+    "phone": "089615178608",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "seconds": 1760681007,
+      "nanoseconds": 38000000
+    }
+  },
+  {
+    "id": "1761897910836",
+    "birthdate": "2025-10-26",
+    "email": "azmiwira26@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "Azmi",
+    "nameLower": "azmi",
+    "phone": "08566662508",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "seconds": 1761897910,
+      "nanoseconds": 996000000
+    }
+  },
+  {
+    "id": "1762605648775",
+    "birthdate": "2005-01-04",
+    "email": "kartiniathira2804@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "Kartini",
+    "nameLower": "kartini",
+    "phone": "085833197124",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "seconds": 1762605649,
+      "nanoseconds": 828000000
+    }
+  },
+  {
+    "id": "1775773428688",
+    "birthdate": "2006-08-15",
+    "email": "helgadiohartanta@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "HELGA DIO HARTANTA TARIGAN",
+    "nameLower": "helga dio hartanta tarigan",
+    "phone": "085831166130",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "_seconds": 1775773430,
+      "_nanoseconds": 821000000
+    }
+  },
+  {
+    "id": "1777636274741",
+    "birthdate": "2026-05-06",
+    "email": "lovedaisy130@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "Sinta",
+    "nameLower": "sinta",
+    "phone": "081269641923",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "_seconds": 1777636275,
+      "_nanoseconds": 127000000
+    }
+  },
+  {
+    "id": "1777773442284",
+    "birthdate": "1995-03-05",
+    "email": "indahmagenta1@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "indah",
+    "nameLower": "indah",
+    "phone": "083179446921",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "_seconds": 1777773446,
+      "_nanoseconds": 46000000
+    }
+  },
+  {
+    "id": "1780572344032",
+    "birthdate": "2001-02-01",
+    "email": "dindakhairinaqila28@gmail.com",
+    "ktp": null,
+    "lastRoomUpgrade": null,
+    "monthlySinceUpgrade": 0,
+    "name": "ririn",
+    "nameLower": "ririn",
+    "phone": "0895613210799",
+    "redeemablePoints": 0,
+    "roomUpgradeHistory": [],
+    "spendingSinceUpgrade": 0,
+    "tier": "Classic",
+    "upgradeDate": null,
+    "welcomed": true,
+    "yearlySinceUpgrade": 0,
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "createdAt": {
+      "_seconds": 1780572344,
+      "_nanoseconds": 289000000
+    }
+  },
+  {
+    "id": "1785065176990",
+    "redeemablePoints": 0,
+    "phone": "081360968089",
+    "tier": "Classic",
+    "roomUpgradeHistory": [],
+    "email": "windi.tba88@gmail.com",
+    "spendingSinceUpgrade": 0,
+    "lastRoomUpgrade": null,
+    "yearlySinceUpgrade": 0,
+    "monthlySinceUpgrade": 0,
+    "name": "Windi Asdini Rindu Pasaribu",
+    "ktp": null,
+    "nameLower": "windi asdini rindu pasaribu",
+    "birthdate": "1998-09-05",
+    "discountRate": 0.1,
+    "taxRate": 0.1,
+    "welcomed": true,
+    "upgradeDate": null,
+    "createdAt": {
+      "_seconds": 1785065177,
+      "_nanoseconds": 349000000
+    }
+  },
+  {
+    "id": "2WqYh2LYoP9Ib72vOYGw",
+    "name": "Timei",
+    "nameLower": "timei",
+    "keywords": [
+      "t",
+      "ti",
+      "tim",
+      "time",
+      "timei"
+    ],
+    "ktpNumber": "1271026006750002",
+    "birthdate": "1975-06-20",
+    "phone": "082213224264",
+    "email": "fredellacl@gmail.com",
+    "tier": "Bronze",
+    "birthMonth": 6,
+    "birthDay": 20,
+    "welcomed": true,
+    "redeemablePoints": 0,
+    "createdAt": {
+      "seconds": 1756392829,
+      "nanoseconds": 455000000
+    },
+    "updatedAt": {
+      "seconds": 1756392829,
+      "nanoseconds": 455000000
+    },
+    "transactions": [
+      {
+        "date": "2025-08-29T11:10:07.813Z",
+        "cashback": 0,
+        "amount": 158400,
+        "note": ""
+      },
+      {
+        "amount": 477100,
+        "note": "",
+        "date": "2025-09-06T15:08:34.897Z",
+        "cashback": 0
+      },
+      {
+        "date": "2025-11-02T10:03:55.656Z",
+        "amount": 255500,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "monthlySinceUpgrade": 255500,
+    "yearlySinceUpgrade": 891000
+  },
+  {
+    "id": "FJZgEWrkC4hIJDxBHPne",
+    "name": "Siwa",
+    "nameLower": "siwa",
+    "keywords": [
+      "s",
+      "si",
+      "siw",
+      "siwa"
+    ],
+    "ktpNumber": "1271023101910003",
+    "birthdate": "1991-01-31",
+    "phone": "085270526031",
+    "email": "siwananthan43@hmai.com",
+    "updatedAt": {
+      "_seconds": 1769847495,
+      "_nanoseconds": 676000000
+    },
+    "birthMonth": 1,
+    "birthDay": 31,
+    "createdAt": {
+      "_seconds": 1769847495,
+      "_nanoseconds": 676000000
+    },
+    "welcomed": true,
+    "lastBirthdayEmailSent": {
+      "_seconds": 1769847501,
+      "_nanoseconds": 683000000
+    },
+    "tier": "Silver",
+    "redeemablePoints": 0,
+    "monthlySinceUpgrade": 0,
+    "yearlySinceUpgrade": 0,
+    "transactions": [
+      {
+        "date": "2026-01-31T08:19:01.336Z",
+        "amount": 924500,
+        "cashback": 0,
+        "note": ""
+      }
+    ]
+  },
+  {
+    "id": "HnhjkqemK1hcvZwm0XyP",
+    "name": "Budi pratama putra",
+    "nameLower": "budi pratama putra",
+    "keywords": [
+      "b",
+      "bu",
+      "bud",
+      "budi",
+      "budi ",
+      "budi p",
+      "budi pr",
+      "budi pra",
+      "budi prat",
+      "budi prata",
+      "budi pratam",
+      "budi pratama",
+      "budi pratama ",
+      "budi pratama p",
+      "budi pratama pu",
+      "budi pratama put",
+      "budi pratama putr",
+      "budi pratama putra"
+    ],
+    "ktpNumber": "1271030611860005",
+    "birthdate": "1986-11-06",
+    "phone": "081375247651",
+    "email": "Pratamabudi057@gmail.com",
+    "tier": "Bronze",
+    "birthMonth": 11,
+    "birthDay": 6,
+    "welcomed": true,
+    "monthlySinceUpgrade": 0,
+    "yearlySinceUpgrade": 0,
+    "createdAt": {
+      "seconds": 1757576583,
+      "nanoseconds": 960000000
+    },
+    "lastBirthdayEmailSent": {
+      "seconds": 1762424182,
+      "nanoseconds": 175000000
+    },
+    "updatedAt": {
+      "seconds": 1757576583,
+      "nanoseconds": 960000000
+    }
+  },
+  {
+    "id": "KENYCqRvpUTz807R0r2F",
+    "name": "Viona",
+    "nameLower": "viona",
+    "keywords": [
+      "v",
+      "vi",
+      "vio",
+      "vion",
+      "viona"
+    ],
+    "ktpNumber": "",
+    "birthdate": "2002-05-15",
+    "phone": "088266272830",
+    "email": "",
+    "tier": "Bronze",
+    "birthMonth": 5,
+    "birthDay": 15,
+    "welcomed": true,
+    "redeemablePoints": 0,
+    "transactions": [
+      {
+        "date": "2025-12-24T06:04:26.366Z",
+        "amount": 24000,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "createdAt": {
+      "seconds": 1766556150,
+      "nanoseconds": 268000000
+    },
+    "monthlySinceUpgrade": 24000,
+    "yearlySinceUpgrade": 24000,
+    "updatedAt": {
+      "seconds": 1766556150,
+      "nanoseconds": 268000000
+    },
+    "lastBirthdayEmailSent": {
+      "_seconds": 1778834536,
+      "_nanoseconds": 615000000
+    }
+  },
+  {
+    "id": "SXuRdALF5a45MNF5Y5tb",
+    "name": "Farica",
+    "nameLower": "farica",
+    "keywords": [
+      "f",
+      "fa",
+      "far",
+      "fari",
+      "faric",
+      "farica"
+    ],
+    "ktpNumber": "1271196408920003",
+    "birthdate": "1992-08-24",
+    "phone": "087787218713",
+    "email": "",
+    "tier": "Bronze",
+    "birthMonth": 8,
+    "birthDay": 24,
+    "welcomed": true,
+    "redeemablePoints": 0,
+    "transactions": [
+      {
+        "date": "2025-09-06T12:37:29.070Z",
+        "amount": 438500,
+        "cashback": 0,
+        "note": ""
+      }
+    ],
+    "createdAt": {
+      "seconds": 1757161945,
+      "nanoseconds": 940000000
+    },
+    "monthlySinceUpgrade": 438500,
+    "yearlySinceUpgrade": 438500,
+    "updatedAt": {
+      "seconds": 1757161945,
+      "nanoseconds": 940000000
+    },
+    "lastBirthdayEmailSent": {
+      "_seconds": 1787538990,
+      "_nanoseconds": 450000000
+    }
+  },
+  {
+    "id": "V0tXkHOuGahGGGSFVNMZ",
+    "name": "BHM",
+    "nameLower": "bhm",
+    "keywords": [
+      "b",
+      "bh",
+      "bhm"
+    ],
+    "ktpNumber": "",
+    "birthdate": "",
+    "email": "",
+    "tier": "Bronze",
+    "welcomed": true,
+    "ktp": "",
+    "phone": "bentenghondamotor",
+    "monthlySinceUpgrade": 0,
+    "yearlySinceUpgrade": 0,
+    "createdAt": {
+      "seconds": 1756203928,
+      "nanoseconds": 121000000
+    },
+    "updatedAt": {
+      "seconds": 1756271204,
+      "nanoseconds": 436000000
+    }
+  },
+  {
+    "id": "oNyUeGv3p12iJFTyA8fe",
+    "name": "Timei",
+    "nameLower": "timei",
+    "keywords": [
+      "t",
+      "ti",
+      "tim",
+      "time",
+      "timei"
+    ],
+    "ktpNumber": "1271026006750002",
+    "birthdate": "1975-06-20",
+    "phone": "082213224264",
+    "email": "fredellacl@gmail.com",
+    "tier": "Bronze",
+    "birthMonth": 6,
+    "birthDay": 20,
+    "welcomed": true,
+    "monthlySinceUpgrade": 0,
+    "yearlySinceUpgrade": 0,
+    "createdAt": {
+      "seconds": 1756392827,
+      "nanoseconds": 904000000
+    },
+    "updatedAt": {
+      "seconds": 1756392827,
+      "nanoseconds": 904000000
+    }
+  }
+]
