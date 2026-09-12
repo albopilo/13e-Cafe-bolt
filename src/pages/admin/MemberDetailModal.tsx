@@ -155,25 +155,16 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
     }
   };
 
-  const handleDeleteTransaction = async (txId: string, tx: LoyaltyTransaction) => {
-    const label = tx.order_id
-      ? 'This will also delete the associated order and its items. This cannot be undone.'
-      : 'This will reverse its effect on spending and points. This cannot be undone.';
-    if (!confirm(`Delete this transaction? ${label}`)) return;
+  const handleDeleteTransaction = async (txId: string) => {
+    if (!confirm('Delete this transaction? This will reverse its effect on spending and points. This cannot be undone.')) return;
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-transaction`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ transaction_id: txId }),
-      });
+      const { data, error } = await supabase.rpc(
+        'admin_delete_loyalty_transaction',
+        { p_transaction_id: txId },
+      );
 
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error || 'Failed to delete transaction');
-      }
+      if (error) throw error;
+      if (!data?.success) throw new Error('Transaction deletion failed');
 
       addToast('Transaction deleted', 'success');
       loadData(txPage);
@@ -360,7 +351,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
                           )}
                           {isAdmin && (
                             <button
-                              onClick={() => handleDeleteTransaction(tx.id, tx)}
+                              onClick={() => handleDeleteTransaction(tx.id)}
                               className="text-rust-400 text-xs hover:text-rust-500 opacity-0 group-hover:opacity-100 transition-opacity"
                             >
                               delete
