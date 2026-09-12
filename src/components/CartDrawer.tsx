@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useLang } from '@/context/LanguageContext';
 import { formatRupiah } from '@/lib/format';
 import { Plus, Minus, X, Gift, ShoppingCart } from 'lucide-react';
 
 export function CartDrawer({ open, onClose, onCheckout }: { open: boolean; onClose: () => void; onCheckout: () => void }) {
   const { items, changeQty, removeItem, count } = useCart();
+  const { t } = useLang();
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
 
   if (!open) return null;
@@ -19,7 +20,7 @@ export function CartDrawer({ open, onClose, onCheckout }: { open: boolean; onClo
         <div className="p-4 border-b border-cream-200 flex items-center justify-between">
           <h2 className="font-display font-semibold text-espresso-600 flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
-            Your Cart ({count})
+            {t('yourCart')} ({count})
           </h2>
           <button onClick={onClose} className="p-2 hover:bg-cream-200 rounded-lg transition-colors">
             <X className="w-5 h-5 text-espresso-400" />
@@ -30,7 +31,7 @@ export function CartDrawer({ open, onClose, onCheckout }: { open: boolean; onClo
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-espresso-300 gap-2">
               <ShoppingCart className="w-12 h-12" />
-              <p className="text-sm">Your cart is empty</p>
+              <p className="text-sm">{t('cartEmpty')}</p>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -47,7 +48,7 @@ export function CartDrawer({ open, onClose, onCheckout }: { open: boolean; onClo
                       <p className="text-xs text-espresso-300 mt-0.5">{item.variant}</p>
                       {item.is_promo && (
                         <p className="text-xs text-sage-500 mt-1 flex items-center gap-1">
-                          <Gift className="w-3 h-3" /> Free promo item
+                          <Gift className="w-3 h-3" /> {t('freePromoItem')}
                         </p>
                       )}
                     </div>
@@ -89,14 +90,14 @@ export function CartDrawer({ open, onClose, onCheckout }: { open: boolean; onClo
         {items.length > 0 && (
           <div className="p-4 border-t border-cream-200 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-espresso-400">Subtotal</span>
+              <span className="text-sm text-espresso-400">{t('subtotal')}</span>
               <span className="font-semibold text-espresso-600">{formatRupiah(subtotal)}</span>
             </div>
             <button
               onClick={onCheckout}
               className="btn-primary w-full"
             >
-              Checkout
+              {t('checkout')}
             </button>
           </div>
         )}

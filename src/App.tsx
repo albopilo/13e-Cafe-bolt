@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { CartProvider } from '@/context/CartContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { MenuPage } from '@/pages/customer/MenuPage';
 import { CheckoutPage } from '@/pages/customer/CheckoutPage';
 import { QrisPaymentPage } from '@/pages/customer/QrisPaymentPage';
@@ -87,13 +88,15 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ToastProvider>
-          <CartProvider>
-            <AppRoutes />
-          </CartProvider>
-        </ToastProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <CartProvider>
+              <AppRoutes />
+            </CartProvider>
+          </ToastProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import { useLang } from '@/context/LanguageContext';
 import type { Order } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
@@ -12,6 +13,7 @@ export function OrderHistoryPage() {
   const navigate = useNavigate();
   const { member, loading: authLoading } = useAuth();
   const { addToast } = useToast();
+  const { t } = useLang();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export function OrderHistoryPage() {
           <button onClick={() => navigate('/')} className="p-2 hover:bg-cream-200 rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-espresso-600" />
           </button>
-          <h1 className="font-display font-bold text-espresso-600 text-lg">My Orders</h1>
+          <h1 className="font-display font-bold text-espresso-600 text-lg">{t('myOrders')}</h1>
         </div>
       </header>
 
@@ -60,14 +62,14 @@ export function OrderHistoryPage() {
         ) : orders.length === 0 ? (
           <div className="text-center py-16 text-espresso-300">
             <Receipt className="w-12 h-12 mx-auto mb-2 opacity-50" />
-            <p>You haven't placed any orders yet.</p>
+            <p>{t('noOrdersYet')}</p>
           </div>
         ) : (
           <>
             {activeOrders.length > 0 && (
               <section>
                 <h2 className="font-display font-semibold text-espresso-600 mb-3 flex items-center gap-2">
-                  <Clock className="w-4 h-4" /> Active Orders
+                  <Clock className="w-4 h-4" /> {t('activeOrders')}
                 </h2>
                 <div className="space-y-3">
                   {activeOrders.map(order => (
@@ -79,7 +81,7 @@ export function OrderHistoryPage() {
 
             {pastOrders.length > 0 && (
               <section>
-                <h2 className="font-display font-semibold text-espresso-600 mb-3">Past Orders</h2>
+                <h2 className="font-display font-semibold text-espresso-600 mb-3">{t('pastOrders')}</h2>
                 <div className="space-y-3">
                   {pastOrders.map(order => (
                     <OrderHistoryCard key={order.id} order={order} />
@@ -95,6 +97,7 @@ export function OrderHistoryPage() {
 }
 
 function OrderHistoryCard({ order }: { order: Order }) {
+  const { t } = useLang();
   const time = new Date(order.created_at).toLocaleString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -121,7 +124,7 @@ function OrderHistoryCard({ order }: { order: Order }) {
             <span className="text-espresso-500">
               {item.quantity}× {item.name}
               {item.variant && <span className="text-espresso-300"> ({item.variant})</span>}
-              {item.is_promo && <span className="text-sage-500 ml-1">[FREE]</span>}
+              {item.is_promo && <span className="text-sage-500 ml-1">[{t('free')}]</span>}
             </span>
           </div>
         ))}
@@ -129,7 +132,7 @@ function OrderHistoryCard({ order }: { order: Order }) {
 
       <div className="flex justify-between items-center mt-2">
         <span className="text-sm text-espresso-400">
-          {order.payment_method === 'qris' ? 'QRIS' : 'Cash'}
+          {order.payment_method === 'qris' ? t('qris') : t('cash')}
         </span>
         <span className="font-bold text-espresso-600">{formatRupiah(order.grand_total)}</span>
       </div>

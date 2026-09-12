@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
+import { useLang } from '@/context/LanguageContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Coffee, Loader2, User, Mail, Phone, Calendar, Lock, IdCard } from 'lucide-react';
+import { Coffee, Loader as Loader2, User, Mail, Phone, Calendar, Lock, IdCard } from 'lucide-react';
 import { normalizePhone } from '@/lib/categories';
 
 function extractBirthdateFromKTP(ktp: string): string | null {
@@ -29,6 +30,7 @@ function extractBirthdateFromKTP(ktp: string): string | null {
 export function RegisterPage() {
   const { signUp } = useAuth();
   const { addToast } = useToast();
+  const { t } = useLang();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -51,11 +53,11 @@ export function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !phone || !password) {
-      addToast('Please fill in all required fields', 'error');
+      addToast(t('fillAllFields'), 'error');
       return;
     }
     if (password.length < 6) {
-      addToast('Password must be at least 6 characters', 'error');
+      addToast(t('passwordMinLength'), 'error');
       return;
     }
     setLoading(true);
@@ -69,7 +71,7 @@ export function RegisterPage() {
     if (error) {
       addToast(error, 'error');
     } else {
-      addToast('Account created! You can now log in.', 'success');
+      addToast(t('accountCreated'), 'success');
       navigate('/login');
     }
   };
@@ -79,13 +81,13 @@ export function RegisterPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-6">
           <Coffee className="w-12 h-12 text-espresso-600 mx-auto mb-2" />
-          <h1 className="font-display font-bold text-2xl text-espresso-600">Join 13e Café</h1>
-          <p className="text-sm text-espresso-300 mt-1">Earn loyalty points with every order</p>
+          <h1 className="font-display font-bold text-2xl text-espresso-600">{t('joinCafe')}</h1>
+          <p className="text-sm text-espresso-300 mt-1">{t('earnLoyaltyPoints')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="card p-6 space-y-4">
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">Full Name</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('fullName')}</label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -93,13 +95,13 @@ export function RegisterPage() {
                 value={name}
                 onChange={e => setName(e.target.value)}
                 className="input-field pl-10"
-                placeholder="Your name"
+                placeholder={t('yourName')}
                 required
               />
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">Email</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('email')}</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -113,7 +115,7 @@ export function RegisterPage() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">Phone</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('phoneNumber')}</label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -127,7 +129,7 @@ export function RegisterPage() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">KTP / ID Number (optional)</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('ktpOptional')}</label>
             <div className="relative">
               <IdCard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -135,16 +137,16 @@ export function RegisterPage() {
                 value={ktp}
                 onChange={e => handleKtpChange(e.target.value)}
                 className="input-field pl-10"
-                placeholder="16-digit Indonesian ID"
+                placeholder={t('ktpPlaceholder')}
                 maxLength={16}
               />
             </div>
             {ktp.length >= 15 && (
-              <p className="text-xs text-sage-500 mt-1">Birthdate auto-filled from KTP</p>
+              <p className="text-xs text-sage-500 mt-1">{t('birthdateAutoFilled')}</p>
             )}
           </div>
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">Birthdate (optional)</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('birthdateOptional')}</label>
             <div className="relative">
               <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -156,7 +158,7 @@ export function RegisterPage() {
             </div>
           </div>
           <div>
-            <label className="text-sm font-medium text-espresso-500 mb-1 block">Password</label>
+            <label className="text-sm font-medium text-espresso-500 mb-1 block">{t('password')}</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-espresso-300" />
               <input
@@ -164,7 +166,7 @@ export function RegisterPage() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 className="input-field pl-10"
-                placeholder="Min 6 characters"
+                placeholder={t('passwordPlaceholder')}
                 required
               />
             </div>
@@ -175,10 +177,10 @@ export function RegisterPage() {
             className="btn-primary w-full flex items-center justify-center gap-2"
           >
             {loading && <Loader2 className="w-5 h-5 animate-spin" />}
-            {loading ? 'Creating account...' : 'Create Account'}
+            {loading ? t('creatingAccount') : t('createAccountBtn')}
           </button>
           <p className="text-center text-sm text-espresso-300">
-            Already a member? <Link to="/login" className="text-sage-500 font-medium hover:underline">Login</Link>
+            {t('alreadyMember')} <Link to="/login" className="text-sage-500 font-medium hover:underline">{t('login')}</Link>
           </p>
         </form>
       </div>

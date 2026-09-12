@@ -67,15 +67,31 @@ export const OPERATIONAL_HOURS = {
   6: { open: '08:30', close: '21:30', label: 'Saturday' },
 } as const;
 
-export function getOperationalStatus(): { isOpen: boolean; message: string; closeTime: string | null } {
+export function getOperationalStatus(lang: 'en' | 'id' = 'en'): { isOpen: boolean; message: string; closeTime: string | null } {
   const now = new Date();
   const day = now.getDay();
   const hours = OPERATIONAL_HOURS[day as keyof typeof OPERATIONAL_HOURS];
 
+  const messages = {
+    en: {
+      closedMonday: `13e Café is closed on Mondays. We'll be back Tuesday at 08:30.`,
+      weOpenAt: (time: string) => `We open at ${time} today.`,
+      closedForToday: `Sorry, we're closed for today. See you tomorrow!`,
+      openUntil: (time: string) => `Open today until ${time}`,
+    },
+    id: {
+      closedMonday: `13e Café tutup setiap Senin. Kami kembali Selasa pukul 08:30.`,
+      weOpenAt: (time: string) => `Kami buka pukul ${time} hari ini.`,
+      closedForToday: `Maaf, kami tutup hari ini. Sampai jumpa besok!`,
+      openUntil: (time: string) => `Buka hari ini sampai ${time}`,
+    },
+  };
+  const m = messages[lang];
+
   if (!hours || !hours.open) {
     return {
       isOpen: false,
-      message: `13e Café is closed on Mondays. We'll be back Tuesday at 08:30.`,
+      message: m.closedMonday,
       closeTime: null,
     };
   }
@@ -89,20 +105,20 @@ export function getOperationalStatus(): { isOpen: boolean; message: string; clos
   if (currentMinutes < openMinutes) {
     return {
       isOpen: false,
-      message: `We open at ${hours.open} today.`,
+      message: m.weOpenAt(hours.open),
       closeTime: hours.close,
     };
   }
   if (currentMinutes >= closeMinutes) {
     return {
       isOpen: false,
-      message: `Sorry, we're closed for today. See you tomorrow!`,
+      message: m.closedForToday,
       closeTime: hours.close,
     };
   }
   return {
     isOpen: true,
-    message: `Open today until ${hours.close}`,
+    message: m.openUntil(hours.close),
     closeTime: hours.close,
   };
 }

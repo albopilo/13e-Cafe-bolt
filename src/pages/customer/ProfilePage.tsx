@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { useLang } from '@/context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import type { LoyaltyTransaction, RoomUpgrade } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
@@ -11,6 +12,7 @@ const TX_PER_PAGE = 5;
 
 export function ProfilePage() {
   const { member, loading: authLoading } = useAuth();
+  const { t } = useLang();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<LoyaltyTransaction[]>([]);
   const [txCount, setTxCount] = useState(0);
@@ -106,7 +108,7 @@ export function ProfilePage() {
           <button onClick={() => navigate('/')} className="p-2 hover:bg-cream-200 rounded-lg transition-colors">
             <ArrowLeft className="w-5 h-5 text-espresso-600" />
           </button>
-          <h1 className="font-display font-bold text-espresso-600 text-lg">My Profile</h1>
+          <h1 className="font-display font-bold text-espresso-600 text-lg">{t('myProfile')}</h1>
         </div>
       </header>
 
@@ -119,26 +121,26 @@ export function ProfilePage() {
             </div>
             <div>
               <h2 className="font-display font-bold text-xl text-espresso-600">{member.name}</h2>
-              <span className={`badge ${tierColors[member.tier]} mt-1`}>{member.tier} Member</span>
+              <span className={`badge ${tierColors[member.tier]} mt-1`}>{member.tier}</span>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
-            <div><span className="text-espresso-400">Phone:</span> <span className="text-espresso-600 font-medium">{member.phone || '-'}</span></div>
-            <div><span className="text-espresso-400">Email:</span> <span className="text-espresso-600 font-medium truncate">{member.email || '-'}</span></div>
-            <div><span className="text-espresso-400">Birthdate:</span> <span className="text-espresso-600 font-medium">{member.birthdate ? new Date(member.birthdate).toLocaleDateString('en-GB') : '-'}</span></div>
-            <div><span className="text-espresso-400">Points:</span> <span className="text-espresso-600 font-medium">{formatRupiah(member.redeemable_points)}</span></div>
+            <div><span className="text-espresso-400">{t('phoneLabel')}:</span> <span className="text-espresso-600 font-medium">{member.phone || '-'}</span></div>
+            <div><span className="text-espresso-400">{t('emailLabel')}:</span> <span className="text-espresso-600 font-medium truncate">{member.email || '-'}</span></div>
+            <div><span className="text-espresso-400">{t('birthdateLabel')}:</span> <span className="text-espresso-600 font-medium">{member.birthdate ? new Date(member.birthdate).toLocaleDateString('en-GB') : '-'}</span></div>
+            <div><span className="text-espresso-400">{t('pointsLabel')}:</span> <span className="text-espresso-600 font-medium">{formatRupiah(member.redeemable_points)}</span></div>
           </div>
         </div>
 
         {/* Spending summary */}
         {stats && (
           <div className="card p-4">
-            <h3 className="font-display font-semibold text-espresso-600 mb-3">Spending Summary</h3>
+            <h3 className="font-display font-semibold text-espresso-600 mb-3">{t('spendingSummary')}</h3>
             <div className="grid grid-cols-2 gap-3">
-              <StatBox icon={Wallet} label="This Month" value={formatRupiah(stats.monthly)} />
-              <StatBox icon={TrendingUp} label="This Year" value={formatRupiah(stats.yearly)} />
-              <StatBox icon={Crown} label="All Time" value={formatRupiah(stats.allTime)} />
-              <StatBox icon={Gift} label="Cashback Earned" value={formatRupiah(stats.cashbackTotal)} />
+              <StatBox icon={Wallet} label={t('thisMonth')} value={formatRupiah(stats.monthly)} />
+              <StatBox icon={TrendingUp} label={t('thisYear')} value={formatRupiah(stats.yearly)} />
+              <StatBox icon={Crown} label={t('allTime')} value={formatRupiah(stats.allTime)} />
+              <StatBox icon={Gift} label={t('cashbackEarned')} value={formatRupiah(stats.cashbackTotal)} />
             </div>
           </div>
         )}
@@ -146,17 +148,17 @@ export function ProfilePage() {
         {/* Perks */}
         <div className="card p-4">
           <h3 className="font-display font-semibold text-espresso-600 mb-3 flex items-center gap-2">
-            <Crown className="w-4 h-4 text-amber-400" /> {member.tier} Tier Perks
+            <Crown className="w-4 h-4 text-amber-400" /> {member.tier} {t('tierPerks')}
           </h3>
           <div className="grid grid-cols-2 gap-2 text-sm text-espresso-500">
-            <div className="flex items-center gap-1.5"><Coffee className="w-4 h-4 text-espresso-300" /> {perks.cafeDiscount}% off café</div>
-            {perks.hondaDiscount > 0 && <div className="flex items-center gap-1.5"><TrendingUp className="w-4 h-4 text-espresso-300" /> {perks.hondaDiscount}% off Honda</div>}
-            {perks.millenniumDiscount > 0 && <div className="flex items-center gap-1.5"><Home className="w-4 h-4 text-espresso-300" /> {perks.millenniumDiscount}% off Millennium</div>}
-            {perks.cashbackRate > 0 && <div className="flex items-center gap-1.5"><Gift className="w-4 h-4 text-espresso-300" /> {perks.cashbackRate}% cashback</div>}
+            <div className="flex items-center gap-1.5"><Coffee className="w-4 h-4 text-espresso-300" /> {perks.cafeDiscount}% {t('offCafe')}</div>
+            {perks.hondaDiscount > 0 && <div className="flex items-center gap-1.5"><TrendingUp className="w-4 h-4 text-espresso-300" /> {perks.hondaDiscount}% {t('offHonda')}</div>}
+            {perks.millenniumDiscount > 0 && <div className="flex items-center gap-1.5"><Home className="w-4 h-4 text-espresso-300" /> {perks.millenniumDiscount}% {t('offMillennium')}</div>}
+            {perks.cashbackRate > 0 && <div className="flex items-center gap-1.5"><Gift className="w-4 h-4 text-espresso-300" /> {perks.cashbackRate}% {t('cashbackRate')}</div>}
           </div>
           {perks.birthdayPerks.length > 0 && (
             <div className="mt-3 pt-3 border-t border-cream-200">
-              <p className="text-sm font-medium text-espresso-400 mb-1.5">Birthday Perks:</p>
+              <p className="text-sm font-medium text-espresso-400 mb-1.5">{t('birthdayPerks')}</p>
               <ul className="text-sm text-espresso-500 space-y-1">
                 {perks.birthdayPerks.map((p, i) => <li key={i} className="flex items-start gap-1.5"><Gift className="w-3.5 h-3.5 text-amber-400 mt-0.5 flex-shrink-0" /> {p}</li>)}
               </ul>
@@ -168,7 +170,7 @@ export function ProfilePage() {
         {member.tier === 'Gold' && roomUpgrades.length > 0 && (
           <div className="card p-4">
             <h3 className="font-display font-semibold text-espresso-600 mb-2 flex items-center gap-2">
-              <Home className="w-4 h-4 text-amber-400" /> Room Upgrade History
+              <Home className="w-4 h-4 text-amber-400" /> {t('roomUpgradeHistory')}
             </h3>
             <div className="space-y-1.5">
               {roomUpgrades.map(ru => (
@@ -184,10 +186,10 @@ export function ProfilePage() {
         {/* Transaction history */}
         <div className="card p-4">
           <h3 className="font-display font-semibold text-espresso-600 mb-3 flex items-center gap-2">
-            <Receipt className="w-4 h-4 text-sage-400" /> Transaction History ({txCount})
+            <Receipt className="w-4 h-4 text-sage-400" /> {t('transactionHistory')} ({txCount})
           </h3>
           {transactions.length === 0 ? (
-            <p className="text-sm text-espresso-300 text-center py-4">No transactions yet.</p>
+            <p className="text-sm text-espresso-300 text-center py-4">{t('noTransactions')}</p>
           ) : (
             <>
               <div className="space-y-1.5">
@@ -210,7 +212,7 @@ export function ProfilePage() {
                   <button onClick={() => setTxPage(Math.max(0, txPage - 1))} disabled={txPage === 0} className="p-1.5 rounded-lg bg-cream-200 hover:bg-cream-300 disabled:opacity-30 transition-colors">
                     <ChevronLeft className="w-4 h-4 text-espresso-500" />
                   </button>
-                  <span className="text-sm text-espresso-400">Page {txPage + 1} of {totalPages}</span>
+                  <span className="text-sm text-espresso-400">{t('page')} {txPage + 1} {t('of')} {totalPages}</span>
                   <button onClick={() => setTxPage(Math.min(totalPages - 1, txPage + 1))} disabled={txPage >= totalPages - 1} className="p-1.5 rounded-lg bg-cream-200 hover:bg-cream-300 disabled:opacity-30 transition-colors">
                     <ChevronRight className="w-4 h-4 text-espresso-500" />
                   </button>
