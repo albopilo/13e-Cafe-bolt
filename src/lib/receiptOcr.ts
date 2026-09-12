@@ -2,79 +2,72 @@ const MIN_RECEIPT_AMOUNT = 1_000;
 const MAX_RECEIPT_AMOUNT = 10_000_000;
 
 function parseAmount(value: string): number {
-  // Remove currency prefix and any spaces
-  const cleaned = value.replace(/^Rp\s*/i, '').trim();
-  // Strip thousand separators (both . and ,) then parse
-  const digits = cleaned.replace(/[.,]/g, '');
+  const cleaned = value.replace(/^Rp\.?\s*/i, '').trim();
+  const digits = cleaned.replace(/[.,\s]/g, '');
   return Number.parseInt(digits, 10);
 }
 
 function getAmounts(line: string): number[] {
-  // Match Indonesian-format numbers: 224.500 or 224,500 or Rp 224.500 or plain 4-digit+
-  const matches = line.match(/(?:Rp\.?\s*)?\d{1,3}(?:[.,]\d{3})+(?!\d)|(?:Rp\.?\s*)?\d{4,}/gi) || [];
+  const matches = line.match(/(?:Rp\.?\s*)?\d{1,3}(?:[.,\s]\d{3})+(?!\d)|(?:Rp\.?\s*)?\d{4,}/gi) || [];
   return matches
     .map(parseAmount)
-    .filter(amount => !isNaN(amount) && amount >= MIN_RECEIPT_AMOUNT && amount <= MAX_RECEIPT_AMOUNT);
+    .filter(amount => !Number.isNaN(amount) && amount >= MIN_RECEIPT_AMOUNT && amount <= MAX_RECEIPT_AMOUNT);
 }
 
 function isGrandTotalLabel(line: string): boolean {
   return (
-    /grand\s*tota[l1i]/i.test(line) ||
-    /tota[l1i]\s*bayar/i.test(line) ||
+    /grand\s*tota[l1i]?/i.test(line) ||
+    /tota[l1i]?\s*bayar/i.test(line) ||
     /amount\s*due/i.test(line) ||
     /jumlah\s*bayar/i.test(line)
   );
 }
 
 function isTotalLabel(line: string): boolean {
-  return /(^|\s)tota[l1i]\s*:?/i.test(line) && !/subtota[l1i]/i.test(line);
+  return /(^|\s)tota[l1i]?\s*:?/i.test(line) && !/subtota[l1i]?/i.test(line);
 }
 
-export function extractReceiptAmount(text: string): number | null {
+interface AmountCandidate {
+  amount: number;
+  confidence: number;
+}
+
+function getLabeledAmount(lines: string[], labelCheck: (line: string) => boolean, confidence: number): AmountCandidate | null {
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!labelCheck(lines[i])) continue;
+
+    const offsets = [0, 1, -1, 2, -2, 3, -3];
+    for (const offset of offsets) {
+      const lineIndex = i + offset;
+      if (lineIndex < 0 || lineIndex >= lines.length) continue;
+      const amounts = getAmounts(lines[lineIndex]);
+      if (amounts.length > 0) {
+        return { amount: amounts[amounts.length - 1], confidence: confidence - Math.abs(offset) };
+      }
+    }
+  }
+
+  return null;
+}
+
+function extractReceiptAmountCandidate(text: string): AmountCandidate | null {
   const lines = text
     .split(/\r?\n/)
     .map(line => line.trim())
     .filter(Boolean);
 
-  // Pass 1: Grand total keyword on the same line as the amount
-  for (let i = 0; i < lines.length; i++) {
-    if (isGrandTotalLabel(lines[i])) {
-      const amounts = getAmounts(lines[i]);
-      if (amounts.length > 0) return amounts[amounts.length - 1];
-    }
-  }
+  const grandTotal = getLabeledAmount(lines, isGrandTotalLabel, 100);
+  if (grandTotal) return grandTotal;
 
-  // Pass 2: Grand total keyword on one line, amount on the next 1-2 lines
-  for (let i = 0; i < lines.length; i++) {
-    if (isGrandTotalLabel(lines[i])) {
-      for (let j = i + 1; j <= i + 2 && j < lines.length; j++) {
-        const amounts = getAmounts(lines[j]);
-        if (amounts.length > 0) return amounts[amounts.length - 1];
-      }
-    }
-  }
+  const total = getLabeledAmount(lines, isTotalLabel, 80);
+  if (total) return total;
 
-  // Pass 3: "Total" keyword on same line
-  for (let i = 0; i < lines.length; i++) {
-    if (isTotalLabel(lines[i])) {
-      const amounts = getAmounts(lines[i]);
-      if (amounts.length > 0) return amounts[amounts.length - 1];
-    }
-  }
-
-  // Pass 4: "Total" keyword, amount on next line
-  for (let i = 0; i < lines.length; i++) {
-    if (isTotalLabel(lines[i])) {
-      for (let j = i + 1; j <= i + 2 && j < lines.length; j++) {
-        const amounts = getAmounts(lines[j]);
-        if (amounts.length > 0) return amounts[amounts.length - 1];
-      }
-    }
-  }
-
-  // Fallback: take the largest amount on the receipt
   const fallbackAmounts = lines.flatMap(getAmounts);
-  return fallbackAmounts.length > 0 ? Math.max(...fallbackAmounts) : null;
+  return fallbackAmounts.length > 0 ? { amount: Math.max(...fallbackAmounts), confidence: 10 } : null;
+}
+
+export function extractReceiptAmount(text: string): number | null {
+  return extractReceiptAmountCandidate(text)?.amount ?? null;
 }
 
 export interface OcrResult {
@@ -148,6 +141,7 @@ export async function scanReceipt(file: File): Promise<OcrResult> {
   ];
 
   let bestAmount: number | null = null;
+  let bestConfidence = -1;
   let bestText = '';
 
   for (const opts of passes) {
@@ -156,17 +150,12 @@ export async function scanReceipt(file: File): Promise<OcrResult> {
         ? await preprocessImage(file, opts)
         : file;
       const text = await runOcrPass(processed);
-      const amount = extractReceiptAmount(text);
+      const candidate = extractReceiptAmountCandidate(text);
 
-      if (amount !== null && bestAmount === null) {
-        bestAmount = amount;
+      if (candidate && candidate.confidence >= bestConfidence) {
+        bestAmount = candidate.amount;
+        bestConfidence = candidate.confidence;
         bestText = text;
-      }
-
-      if (amount !== null) {
-        bestAmount = amount;
-        bestText = text;
-        break;
       }
     } catch {
       // Continue to next pass
@@ -176,7 +165,8 @@ export async function scanReceipt(file: File): Promise<OcrResult> {
   if (bestAmount === null) {
     try {
       bestText = await runOcrPass(file);
-      bestAmount = extractReceiptAmount(bestText);
+      const candidate = extractReceiptAmountCandidate(bestText);
+      bestAmount = candidate?.amount ?? null;
     } catch {
       // Give up
     }
