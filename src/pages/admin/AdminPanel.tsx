@@ -5,7 +5,7 @@ import { useToast } from '@/context/ToastContext';
 import type { Product, Member, Voucher, MarketingProgram, StaffProfile } from '@/lib/types';
 import { CATEGORY_ORDER, normalizeGoogleDriveUrl } from '@/lib/categories';
 import { formatRupiah } from '@/lib/format';
-import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard, BarChart3, Settings as SettingsIcon } from 'lucide-react';
+import { Package, Tag, Users, Gift, Plus, Pencil, Trash2, X, Loader as Loader2, RefreshCw, Search, Upload, Coffee, UserCog, ArrowLeft, LayoutDashboard, ChartBar as BarChart3, Settings as SettingsIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { DashboardTab } from '@/pages/admin/DashboardTab';
 import { MemberDetailModal } from '@/pages/admin/MemberDetailModal';
@@ -659,7 +659,7 @@ function VoucherForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
 
 function MembersTab() {
   const { addToast } = useToast();
-  const { session, isAdmin } = useAuth();
+  const { session, isAdmin, isMainKitchen } = useAuth();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
