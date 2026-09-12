@@ -158,13 +158,22 @@ export function MemberDetailModal({ member, isAdmin, isMainKitchen, onClose, onD
   const handleDeleteTransaction = async (txId: string) => {
     if (!confirm('Delete this transaction? This will reverse its effect on spending and points. This cannot be undone.')) return;
     try {
-      const { data, error } = await supabase.rpc(
-        'admin_delete_loyalty_transaction',
-        { p_transaction_id: txId },
-      );
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-transaction`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ transaction_id: txId }),
+      });
 
-      if (error) throw error;
-      if (!data?.success) throw new Error('Transaction deletion failed');
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to delete transaction');
+      }
+
+      const data = await response.json();
+      if (!data.success) throw new Error(data.error || 'Transaction deletion failed');
 
       addToast('Transaction deleted', 'success');
       loadData(txPage);
