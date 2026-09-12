@@ -809,14 +809,14 @@ function MembersTab() {
       )}
 
       {detailMember && (
-        <MemberDetailModal member={detailMember} isAdmin={isAdmin} isMainKitchen={isMainKitchen} onClose={() => setDetailMember(null)} onDeleted={() => { setDetailMember(null); fetch(); }} />
+        <MemberDetailModal member={detailMember} isAdmin={isAdmin} isMainKitchen={isMainKitchen} onClose={() => setDetailMember(null)} onDeleted={() => { setDetailMember(null); loadMembers(); }} />
       )}
 
       {showForm && (
         <MemberForm
           member={editingMember}
           onClose={() => { setShowForm(false); setEditingMember(null); }}
-          onSaved={() => { fetch(); setShowForm(false); setEditingMember(null); }}
+          onSaved={() => { loadMembers(); setShowForm(false); setEditingMember(null); }}
         />
       )}
     </div>
