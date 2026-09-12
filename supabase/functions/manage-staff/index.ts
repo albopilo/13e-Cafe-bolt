@@ -59,8 +59,8 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const action = body.action;
 
-    // Only admins can create/delete staff
-    if (!admin && (action === "create" || action === "delete")) {
+    // Only admins can create/delete staff or delete members
+    if (!admin && (action === "create" || action === "delete" || action === "delete_member")) {
       return new Response(JSON.stringify({ error: "Admin access required for this action" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -191,15 +191,33 @@ Deno.serve(async (req: Request) => {
         });
       }
 
-      // Clean up related data
-      await supabase.from("loyalty_transactions").delete().eq("member_id", user_id);
-      await supabase.from("room_upgrades").delete().eq("member_id", user_id);
-      await supabase.from("members").delete().eq("user_id", user_id);
+      // Clean up related data (orders are kept, their member link is
+      // cleared automatically via ON DELETE SET NULL)
+      const { error: ltError } = await supabase.from("loyalty_transactions").delete().eq("member_id", user_id);
+      if (ltError) {
+        return new Response(JSON.stringify({ error: `Failed to delete loyalty history: ${ltError.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: ruError } = await supabase.from("room_upgrades").delete().eq("member_id", user_id);
+      if (ruError) {
+        return new Response(JSON.stringify({ error: `Failed to delete room upgrades: ${ruError.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: memberError } = await supabase.from("members").delete().eq("user_id", user_id);
+      if (memberError) {
+        return new Response(JSON.stringify({ error: `Failed to delete member record: ${memberError.message}` }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       const { error: deleteError } = await supabase.auth.admin.deleteUser(user_id);
 
       if (deleteError) {
-        return new Response(JSON.stringify({ error: deleteError.message }), {
+        return new Response(JSON.stringify({ error: `Member data removed but account deletion failed: ${deleteError.message}` }), {
           status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
