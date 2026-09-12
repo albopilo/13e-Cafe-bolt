@@ -32,7 +32,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
   const [redeeming, setRedeeming] = useState(false);
   const [claimingRoom, setClaimingRoom] = useState(false);
 
-  const fetch = useCallback(async (page: number) => {
+  const loadData = useCallback(async (page: number) => {
     const [txsRes, countRes, upgradesRes] = await Promise.all([
       supabase
         .from('loyalty_transactions')
@@ -87,9 +87,9 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
     setLoading(false);
   }, [member.user_id]);
 
-  useEffect(() => { fetch(0); }, [fetch]);
+  useEffect(() => { loadData(0); }, [loadData]);
 
-  useEffect(() => { if (txPage >= 0) fetch(txPage); }, [txPage, fetch]);
+  useEffect(() => { if (txPage >= 0) loadData(txPage); }, [txPage, loadData]);
 
   const handleRedeemPoints = async () => {
     if (member.redeemable_points <= 0) {
@@ -120,7 +120,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
         .eq('user_id', member.user_id);
 
       addToast(`Redeemed ${formatRupiah(member.redeemable_points)} points`, 'success');
-      fetch(txPage);
+      loadData(txPage);
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to redeem points', 'error');
     } finally {
@@ -147,7 +147,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
         .eq('user_id', member.user_id);
 
       addToast('Room upgrade claimed', 'success');
-      fetch(txPage);
+      loadData(txPage);
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to claim room upgrade', 'error');
     } finally {
@@ -189,7 +189,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
 
       await supabase.from('loyalty_transactions').delete().eq('id', txId);
       addToast('Transaction deleted', 'success');
-      fetch(txPage);
+      loadData(txPage);
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to delete transaction', 'error');
     }
@@ -199,7 +199,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
     if (!confirm(`Permanently delete member "${member.name}"? This will remove their account, all transactions, and room upgrade history. This cannot be undone.`)) return;
     setDeletingMember(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+      const response = await window.fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -410,7 +410,7 @@ export function MemberDetailModal({ member, isAdmin, onClose, onDeleted }: { mem
       </div>
 
       {showManualTx && (
-        <ManualTransactionModalWrapper member={member} onClose={() => setShowManualTx(false)} onSaved={() => { setShowManualTx(false); fetch(txPage); }} />
+        <ManualTransactionModalWrapper member={member} onClose={() => setShowManualTx(false)} onSaved={() => { setShowManualTx(false); loadData(txPage); }} />
       )}
     </div>
   );

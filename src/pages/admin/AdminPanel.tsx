@@ -668,7 +668,7 @@ function MembersTab() {
   const [showForm, setShowForm] = useState(false);
   const [deletingMember, setDeletingMember] = useState(false);
 
-  const fetch = useCallback(async () => {
+  const loadMembers = useCallback(async () => {
     const { data, error } = await supabase.from('members').select('*').order('created_at', { ascending: false });
     if (error) {
       addToast('Failed to load members', 'error');
@@ -678,7 +678,7 @@ function MembersTab() {
     setLoading(false);
   }, [addToast]);
 
-  useEffect(() => { fetch(); }, [fetch]);
+  useEffect(() => { loadMembers(); }, [loadMembers]);
 
   const filtered = members.filter(m =>
     m.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -689,7 +689,7 @@ function MembersTab() {
     if (!confirm(`Permanently delete member "${m.name}"? This will remove their account, all transactions, and room upgrade history. This cannot be undone.`)) return;
     setDeletingMember(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
+      const response = await window.fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/manage-staff`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -702,7 +702,7 @@ function MembersTab() {
         throw new Error(err.error || 'Failed to delete member');
       }
       addToast('Member deleted', 'success');
-      fetch();
+      loadMembers();
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to delete member', 'error');
     } finally {
