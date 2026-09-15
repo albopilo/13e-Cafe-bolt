@@ -50,11 +50,53 @@ function getLabeledAmount(lines: string[], labelCheck: (line: string) => boolean
   return null;
 }
 
+function getNearbyAmount(lines: string[], labelCheck: (line: string) => boolean, allowSmall = false): number | null {
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!labelCheck(lines[i])) continue;
+    for (const offset of [0, 1, -1, 2, -2]) {
+      const line = lines[i + offset];
+      if (!line) continue;
+      const values = allowSmall
+        ? (line.match(/\d[\d.,]*/g) || []).map(parseAmount).filter(amount => !Number.isNaN(amount) && amount < MIN_RECEIPT_AMOUNT)
+        : getAmounts(line);
+      if (values.length > 0) return values[values.length - 1];
+    }
+  }
+  return null;
+}
+
+function getReconciledTotal(lines: string[]): AmountCandidate | null {
+  if (!lines.some(isGrandTotalLabel)) return null;
+
+  const subtotal = getNearbyAmount(lines, line => /subtota[l1i]?/i.test(line));
+  if (subtotal === null) return null;
+
+  const adjustments: Array<{ amount: number; negative: boolean }> = [];
+  const addAdjustment = (labelCheck: (line: string) => boolean, negative: boolean, allowSmall = false) => {
+    const amount = getNearbyAmount(lines, labelCheck, allowSmall);
+    if (amount !== null) adjustments.push({ amount, negative });
+  };
+
+  addAdjustment(line => /discount|gold|silver|bronze|classic/i.test(line), true);
+  addAdjustment(line => /biaya|layanan|service|fee/i.test(line), false);
+  addAdjustment(line => /pajak|pb1|tax/i.test(line), false);
+  addAdjustment(line => /pembulatan|round/i.test(line), true, true);
+
+  if (adjustments.length === 0) return null;
+  const amount = adjustments.reduce((total, adjustment) => (
+    adjustment.negative ? total - adjustment.amount : total + adjustment.amount
+  ), subtotal);
+  return { amount, confidence: 110 };
+}
+
 function extractReceiptAmountCandidate(text: string): AmountCandidate | null {
   const lines = text
     .split(/\r?\n/)
     .map(line => line.trim())
     .filter(Boolean);
+
+  const reconciledTotal = getReconciledTotal(lines);
+  if (reconciledTotal) return reconciledTotal;
 
   const grandTotal = getLabeledAmount(lines, isGrandTotalLabel, 100);
   if (grandTotal) return grandTotal;
@@ -63,7 +105,10 @@ function extractReceiptAmountCandidate(text: string): AmountCandidate | null {
   if (total) return total;
 
   const fallbackAmounts = lines.flatMap(getAmounts);
-  return fallbackAmounts.length > 0 ? { amount: Math.max(...fallbackAmounts), confidence: 10 } : null;
+  if (fallbackAmounts.length === 0) return null;
+  const max = Math.max(...fallbackAmounts);
+  const significant = fallbackAmounts.filter(a => a >= max * 0.4);
+  return { amount: significant[significant.length - 1], confidence: 10 };
 }
 
 export function extractReceiptAmount(text: string): number | null {
