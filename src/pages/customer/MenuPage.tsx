@@ -19,7 +19,7 @@ export function MenuPage() {
   const [hoursPopup, setHoursPopup] = useState(false);
   const [tableParam, setTableParam] = useState('Takeaway');
   const { addItem, count, setProducts: setCartProducts, setPromoPrograms, pendingVariantSelection, resolveVariantSelection, cancelVariantSelection } = useCart();
-  const { member, isAdmin, isStaff, signOut } = useAuth();
+  const { member, isAdmin, isStaff, isMainKitchen, signOut } = useAuth();
   const { addToast } = useToast();
   const { lang, toggleLang, t } = useLang();
   const navigate = useNavigate();
@@ -109,7 +109,7 @@ export function MenuPage() {
 
             {member || isAdmin || isStaff ? (
               <div className="flex items-center gap-2">
-                {isAdmin && (
+                {(isAdmin || isMainKitchen) && (
                   <button
                     onClick={() => navigate('/admin')}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-espresso-600 text-cream-100 text-sm font-medium hover:bg-espresso-700 transition-colors"
