@@ -83,20 +83,10 @@ function getReconciledTotal(lines: string[]): AmountCandidate | null {
   addAdjustment(line => /pembulatan|round/i.test(line), true, true);
 
   if (adjustments.length === 0) return null;
-  const computed = adjustments.reduce((total, adjustment) => (
+  const amount = adjustments.reduce((total, adjustment) => (
     adjustment.negative ? total - adjustment.amount : total + adjustment.amount
   ), subtotal);
-
-  // Validate: reconciled total must be within 5% of the labeled grand total.
-  // If OCR misread a line the math will be wrong — discard it so the labeled
-  // grand total is used directly instead.
-  const labeled = getLabeledAmount(lines, isGrandTotalLabel, 100);
-  if (labeled !== null) {
-    const tolerance = labeled.amount * 0.05;
-    if (Math.abs(computed - labeled.amount) > tolerance) return null;
-  }
-
-  return { amount: computed, confidence: 110 };
+  return { amount, confidence: 110 };
 }
 
 function extractReceiptAmountCandidate(text: string): AmountCandidate | null {
