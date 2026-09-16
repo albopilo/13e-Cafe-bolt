@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import QRCode from 'qrcode';
+import { jsPDF } from 'jspdf';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useLang } from '@/context/LanguageContext';
 import type { RoomTable } from '@/lib/types';
-import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil } from 'lucide-react';
+import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil, FileText } from 'lucide-react';
 
 const BASE_URL = 'https://13ecafe.netlify.app';
 
@@ -194,6 +195,63 @@ export function QrCodeTab() {
   const [showForm, setShowForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<RoomTable | null>(null);
   const [printMode, setPrintMode] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (rooms.length === 0) return;
+    setPdfLoading(true);
+    try {
+      const posterTexts = {
+        cafeName: '13e Cafe',
+        scanToOrder: t('qrPosterScanToOrder'),
+        roomLabel: t('qrPosterRoom'),
+        instruction1: t('qrPosterInstruction1'),
+        instruction2: t('qrPosterInstruction2'),
+        instruction3: t('qrPosterInstruction3'),
+        qrisOnly: t('qrisOnly'),
+      };
+
+      const posters: HTMLCanvasElement[] = [];
+      for (const room of rooms) {
+        posters.push(await generatePosterCanvas(room, posterTexts, 2));
+      }
+
+      // F4 paper in mm: 210 x 330
+      const F4_W = 210;
+      const F4_H = 330;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [F4_W, F4_H] });
+
+      const margin = 10;
+      const availW = F4_W - margin * 2;
+      const availH = F4_H - margin * 2;
+
+      for (let i = 0; i < posters.length; i++) {
+        const poster = posters[i];
+        const imgData = poster.toDataURL('image/png');
+
+        // Fit poster within available area, preserving aspect ratio
+        const posterRatio = poster.width / poster.height;
+        let drawW = availW;
+        let drawH = drawW / posterRatio;
+        if (drawH > availH) {
+          drawH = availH;
+          drawW = drawH * posterRatio;
+        }
+        const x = (F4_W - drawW) / 2;
+        const y = (F4_H - drawH) / 2;
+
+        if (i > 0) pdf.addPage([F4_W, F4_H], 'portrait');
+        pdf.addImage(imgData, 'PNG', x, y, drawW, drawH);
+      }
+
+      pdf.save('qr-codes-all-rooms.pdf');
+      addToast(t('qrSaved'), 'success');
+    } catch {
+      addToast(t('qrSaveFailed'), 'error');
+    } finally {
+      setPdfLoading(false);
+    }
+  };
 
   const fetchRooms = useCallback(async () => {
     const { data, error } = await supabase
@@ -233,6 +291,10 @@ export function QrCodeTab() {
         </button>
         <button onClick={() => setPrintMode(true)} disabled={rooms.length === 0} className="btn-secondary text-sm py-2.5 flex items-center gap-1.5 disabled:opacity-50">
           <Printer className="w-4 h-4" /> {t('qrPrintAll')}
+        </button>
+        <button onClick={handleDownloadPdf} disabled={rooms.length === 0 || pdfLoading} className="btn-secondary text-sm py-2.5 flex items-center gap-1.5 disabled:opacity-50">
+          {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+          {pdfLoading ? t('qrGeneratingPdf') : t('qrDownloadPdf')}
         </button>
       </div>
 
