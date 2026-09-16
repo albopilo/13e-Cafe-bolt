@@ -148,12 +148,21 @@ export function MenuPage() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="btn-secondary text-sm py-2 px-4"
-              >
-                {t('login')}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate('/orders')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 text-espresso-600 text-sm font-medium hover:bg-cream-300 transition-colors"
+                >
+                  <Receipt className="w-4 h-4" />
+                  <span className="hidden sm:inline">{t('myOrders')}</span>
+                </button>
+                <button
+                  onClick={() => navigate('/login')}
+                  className="btn-secondary text-sm py-2 px-4"
+                >
+                  {t('login')}
+                </button>
+              </div>
             )}
             <button
               onClick={() => setCartOpen(true)}

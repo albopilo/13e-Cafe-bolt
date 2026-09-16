@@ -7,6 +7,7 @@ import { formatRupiah, roundToNearest100 } from '@/lib/format';
 import { isQrisOnly, getDeliveryFee } from '@/lib/categories';
 import { getTableName } from '@/lib/cart';
 import { TIER_CONFIGS } from '@/lib/loyalty';
+import { addGuestOrder } from '@/lib/guestOrders';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, CreditCard, Banknote, Tag, Loader2, Phone } from 'lucide-react';
 
@@ -109,12 +110,35 @@ export function CheckoutPage() {
 
       const data = await response.json();
       addToast('Order placed successfully!', 'success');
+
+      if (!member) {
+        addGuestOrder({
+          id: data.order_id,
+          table_name: tableName,
+          grand_total: grandTotal,
+          payment_method: paymentMethod,
+          payment_status: paymentMethod === 'qris' ? 'awaiting-proof' : 'none',
+          status: 'pending',
+          items: items.map(i => ({
+            product_id: i.product_id,
+            name: i.name,
+            variant: i.variant,
+            price: i.price,
+            quantity: i.quantity,
+            is_promo: i.is_promo,
+          })),
+          created_at: new Date().toISOString(),
+        });
+      }
+
       clear();
 
       if (paymentMethod === 'qris') {
         navigate(`/qris-payment?order_id=${data.order_id}`);
+      } else if (member) {
+        navigate('/orders');
       } else {
-        navigate('/login');
+        navigate('/orders');
       }
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to create order', 'error');

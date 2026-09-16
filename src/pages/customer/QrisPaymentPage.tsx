@@ -4,6 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { formatRupiah } from '@/lib/format';
+import { getGuestOrderById } from '@/lib/guestOrders';
 import { ArrowLeft, Upload, Loader2, CheckCircle2, QrCode, Download } from 'lucide-react';
 
 export function QrisPaymentPage() {
@@ -38,6 +39,11 @@ export function QrisPaymentPage() {
       if (data) {
         setOrder(data);
         if (data.proof_url) setUploaded(true);
+      } else {
+        const guestOrder = getGuestOrderById(orderId);
+        if (guestOrder) {
+          setOrder({ grand_total: guestOrder.grand_total, table_name: guestOrder.table_name, proof_url: null });
+        }
       }
     })();
   }, [orderId, navigate]);

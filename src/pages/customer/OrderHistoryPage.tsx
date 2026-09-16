@@ -7,6 +7,7 @@ import { useLang } from '@/context/LanguageContext';
 import type { Order } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
+import { getGuestOrders, guestOrderToOrder, type GuestOrderCache } from '@/lib/guestOrders';
 import { ArrowLeft, Receipt, Clock, Coffee } from 'lucide-react';
 
 export function OrderHistoryPage() {
@@ -19,10 +20,14 @@ export function OrderHistoryPage() {
 
   useEffect(() => {
     if (authLoading) return;
+
     if (!member) {
-      navigate('/login?redirect=/orders');
+      const guestOrders = getGuestOrders();
+      setOrders(guestOrders.map((g: GuestOrderCache) => guestOrderToOrder(g)));
+      setLoading(false);
       return;
     }
+
     (async () => {
       const { data, error } = await supabase
         .from('orders')
@@ -55,6 +60,11 @@ export function OrderHistoryPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-4 py-4 space-y-6">
+        {!member && !loading && orders.length > 0 && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
+            <p className="text-sm text-amber-600">{t('guestOrdersNote')}</p>
+          </div>
+        )}
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Coffee className="w-8 h-8 animate-spin text-espresso-300" />
@@ -73,7 +83,7 @@ export function OrderHistoryPage() {
                 </h2>
                 <div className="space-y-3">
                   {activeOrders.map(order => (
-                    <OrderHistoryCard key={order.id} order={order} />
+                    <OrderHistoryCard key={order.id} order={order} isGuest={!member} />
                   ))}
                 </div>
               </section>
@@ -84,7 +94,7 @@ export function OrderHistoryPage() {
                 <h2 className="font-display font-semibold text-espresso-600 mb-3">{t('pastOrders')}</h2>
                 <div className="space-y-3">
                   {pastOrders.map(order => (
-                    <OrderHistoryCard key={order.id} order={order} />
+                    <OrderHistoryCard key={order.id} order={order} isGuest={!member} />
                   ))}
                 </div>
               </section>
@@ -96,14 +106,17 @@ export function OrderHistoryPage() {
   );
 }
 
-function OrderHistoryCard({ order }: { order: Order }) {
+function OrderHistoryCard({ order, isGuest }: { order: Order; isGuest?: boolean }) {
   const { t } = useLang();
+  const navigate = useNavigate();
   const time = new Date(order.created_at).toLocaleString('en-GB', {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
     minute: '2-digit',
   });
+
+  const showQrisLink = isGuest && order.payment_method === 'qris' && order.payment_status === 'awaiting-proof';
 
   return (
     <div className="card p-4">
@@ -136,6 +149,15 @@ function OrderHistoryCard({ order }: { order: Order }) {
         </span>
         <span className="font-bold text-espresso-600">{formatRupiah(order.grand_total)}</span>
       </div>
+
+      {showQrisLink && (
+        <button
+          onClick={() => navigate(`/qris-payment?order_id=${order.id}`)}
+          className="btn-secondary w-full mt-3 text-sm py-2"
+        >
+          {t('scanToPay')}
+        </button>
+      )}
     </div>
   );
 }

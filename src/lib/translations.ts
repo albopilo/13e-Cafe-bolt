@@ -85,6 +85,7 @@ export const translations = {
     activeOrders: 'Active Orders',
     pastOrders: 'Past Orders',
     noOrdersYet: "You haven't placed any orders yet.",
+    guestOrdersNote: "Showing orders saved on this device. Login to see your full order history.",
 
     // Status badges
     pending: 'pending',
@@ -238,6 +239,7 @@ export const translations = {
     activeOrders: 'Pesanan Aktif',
     pastOrders: 'Pesanan Sebelumnya',
     noOrdersYet: 'Anda belum memesan apa pun.',
+    guestOrdersNote: 'Menampilkan pesanan tersimpan di perangkat ini. Masuk untuk melihat riwayat lengkap.',
 
     // Status badges
     pending: 'menunggu',
