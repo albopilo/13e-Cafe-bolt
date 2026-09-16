@@ -17,7 +17,16 @@ export function MenuPage() {
   const [activeCategory, setActiveCategory] = useState<string>('');
   const [cartOpen, setCartOpen] = useState(false);
   const [hoursPopup, setHoursPopup] = useState(false);
-  const [tableParam, setTableParam] = useState('Takeaway');
+  const [tableParam, setTableParam] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    const table = params.get('table');
+    if (table) {
+      const decoded = table.replace(/-/g, ' ');
+      localStorage.setItem('cafe13_table', decoded);
+      return decoded;
+    }
+    return localStorage.getItem('cafe13_table') || 'Takeaway';
+  });
   const { addItem, count, setProducts: setCartProducts, setPromoPrograms, pendingVariantSelection, resolveVariantSelection, cancelVariantSelection } = useCart();
   const { member, isAdmin, isStaff, isMainKitchen, signOut } = useAuth();
   const { addToast } = useToast();
@@ -27,12 +36,6 @@ export function MenuPage() {
   const opStatus = useMemo(() => getOperationalStatus(lang), [lang]);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const table = params.get('table');
-    if (table) {
-      setTableParam(table.replace(/-/g, ' '));
-      localStorage.setItem('cafe13_table', table.replace(/-/g, ' '));
-    }
     setHoursPopup(true);
   }, []);
 

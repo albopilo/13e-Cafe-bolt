@@ -7,7 +7,7 @@ import { useLang } from '@/context/LanguageContext';
 import type { Order } from '@/lib/types';
 import { formatRupiah } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
-import { getGuestOrders, guestOrderToOrder, type GuestOrderCache } from '@/lib/guestOrders';
+import { getGuestOrders, guestOrderToOrder, updateGuestOrderFields, type GuestOrderCache } from '@/lib/guestOrders';
 import { ArrowLeft, Receipt, Clock, Coffee } from 'lucide-react';
 
 export function OrderHistoryPage() {
@@ -44,6 +44,32 @@ export function OrderHistoryPage() {
       setLoading(false);
     })();
   }, [member, authLoading, navigate, addToast]);
+
+  useEffect(() => {
+    if (member || authLoading) return;
+    const guestOrders = getGuestOrders();
+    if (guestOrders.length === 0) return;
+
+    const orderIds = guestOrders.map(o => o.id);
+
+    const channel = supabase
+      .channel('guest-order-updates')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' }, (payload) => {
+        const updated = payload.new as { id: string; status: string; payment_status: string };
+        if (!orderIds.includes(updated.id)) return;
+        updateGuestOrderFields(updated.id, { status: updated.status, payment_status: updated.payment_status });
+        setOrders(prev => prev.map(o =>
+          o.id === updated.id
+            ? { ...o, status: updated.status as Order['status'], payment_status: updated.payment_status as Order['payment_status'] }
+            : o
+        ));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [member, authLoading]);
 
   const activeOrders = orders.filter(o => o.status === 'pending' || o.status === 'preparing');
   const pastOrders = orders.filter(o => o.status === 'served' || o.status === 'cancelled');

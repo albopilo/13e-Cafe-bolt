@@ -47,6 +47,15 @@ export function removeGuestOrder(id: string): void {
   localStorage.setItem(GUEST_ORDERS_KEY, JSON.stringify(orders));
 }
 
+export function updateGuestOrderFields(id: string, fields: Partial<Pick<GuestOrderCache, 'status' | 'payment_status'>>): void {
+  const orders = getGuestOrders();
+  const idx = orders.findIndex(o => o.id === id);
+  if (idx >= 0) {
+    orders[idx] = { ...orders[idx], ...fields };
+    localStorage.setItem(GUEST_ORDERS_KEY, JSON.stringify(orders));
+  }
+}
+
 export function guestOrderToOrder(g: GuestOrderCache): Order {
   return {
     id: g.id,
