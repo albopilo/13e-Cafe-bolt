@@ -82,5 +82,5 @@ h1, h2, h3, h4, h5, h6 {
   .no-print { display: none !important; }
   .qr-print-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; }
   .qr-print-card { break-inside: avoid; page-break-inside: avoid; }
-  .qr-print-header { margin-bottom: 24px; }
+  .qr-print-card canvas { max-width: 100% !important; height: auto !important; }
 }

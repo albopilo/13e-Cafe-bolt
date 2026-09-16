@@ -179,6 +179,11 @@ export const translations = {
     qrPrintPreview: 'Print Preview',
     qrPrint: 'Print',
     qrPrintSubtitle: 'Scan to order from your room',
+    qrPosterScanToOrder: 'Scan to Order',
+    qrPosterRoom: 'Room',
+    qrPosterInstruction1: 'Scan this QR code with your phone camera',
+    qrPosterInstruction2: 'Browse our menu and place your order',
+    qrPosterInstruction3: 'Pay with QRIS or cash — no app needed',
   },
 
   id: {
@@ -359,6 +364,11 @@ export const translations = {
     qrPrintPreview: 'Pratinjau Cetak',
     qrPrint: 'Cetak',
     qrPrintSubtitle: 'Scan untuk memesan dari kamar Anda',
+    qrPosterScanToOrder: 'Scan untuk Pesan',
+    qrPosterRoom: 'Kamar',
+    qrPosterInstruction1: 'Scan kode QR ini dengan kamera ponsel Anda',
+    qrPosterInstruction2: 'Lihat menu dan buat pesanan Anda',
+    qrPosterInstruction3: 'Bayar dengan QRIS atau tunai — tanpa aplikasi',
   },
 } as const;
 
