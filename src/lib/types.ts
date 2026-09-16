@@ -182,6 +182,17 @@ export interface Settings {
   updated_at: string;
 }
 
+export interface RoomTable {
+  id: string;
+  name: string;
+  display_name: string;
+  delivery_fee: number;
+  qris_only: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CartItem {
   product_id: string;
   name: string;
