@@ -4,7 +4,6 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useLang } from '@/context/LanguageContext';
 import type { RoomTable } from '@/lib/types';
-import { formatRupiah } from '@/lib/format';
 import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil } from 'lucide-react';
 
 const BASE_URL = 'https://13ecafe.netlify.app';
@@ -29,8 +28,6 @@ async function generatePosterCanvas(
     instruction2: string;
     instruction3: string;
     qrisOnly: string;
-    deliveryFee: string;
-    free: string;
   },
   scale = 2,
 ): Promise<HTMLCanvasElement> {
@@ -141,10 +138,6 @@ async function generatePosterCanvas(
   if (room.qris_only) {
     pills.push({ text: texts.qrisOnly, bg: '#E8D5B8', fg: COLORS.espresso });
   }
-  const feeText = room.delivery_fee > 0
-    ? `${texts.deliveryFee}: ${formatRupiah(room.delivery_fee)}`
-    : `${texts.deliveryFee}: ${texts.free}`;
-  pills.push({ text: feeText, bg: '#D4E8D0', fg: '#2D5A27' });
 
   let pillX = (w - pills.reduce((sum, p) => sum + ctxTextWidth(ctx, p.text, 'bold 13px -apple-system, sans-serif') + 28, 0)) / 2;
   ctx.font = 'bold 13px -apple-system, sans-serif';
@@ -298,8 +291,6 @@ function RoomQrCard({ room, onDelete, onEdit }: { room: RoomTable; onDelete: () 
         instruction2: t('qrPosterInstruction2'),
         instruction3: t('qrPosterInstruction3'),
         qrisOnly: t('qrisOnly'),
-        deliveryFee: t('deliveryFee'),
-        free: t('free'),
       });
       const link = document.createElement('a');
       link.download = `qr-${room.name.replace(/\s+/g, '-')}.png`;
@@ -316,7 +307,7 @@ function RoomQrCard({ room, onDelete, onEdit }: { room: RoomTable; onDelete: () 
         <div>
           <p className="font-display font-bold text-espresso-600">{room.display_name}</p>
           <p className="text-xs text-espresso-300 mt-0.5">
-            {room.qris_only ? t('qrisOnly') : t('cash')} · {room.delivery_fee > 0 ? `+${formatRupiah(room.delivery_fee)}` : t('free')}
+            {room.qris_only ? t('qrisOnly') : t('cash')}
           </p>
         </div>
         <div className="flex gap-1.5">
@@ -441,8 +432,6 @@ function PrintLayout({ rooms, onClose }: { rooms: RoomTable[]; onClose: () => vo
           instruction2: t('qrPosterInstruction2'),
           instruction3: t('qrPosterInstruction3'),
           qrisOnly: t('qrisOnly'),
-          deliveryFee: t('deliveryFee'),
-          free: t('free'),
         }, 1.5);
         if (cancelled) return;
         const ctx = canvas.getContext('2d')!;
