@@ -157,7 +157,7 @@ export const translations = {
     // QR Code management
     qrAddRoom: 'Add Room',
     qrPrintAll: 'Print All',
-    qrDownloadPdf: 'Download PDF',
+    qrDownloadAll: 'Download All',
     qrGeneratingPdf: 'Generating PDF...',
     qrNoRooms: 'No rooms yet. Add one to generate QR codes.',
     qrDownload: 'Download QR',
@@ -344,7 +344,7 @@ export const translations = {
     // QR Code management
     qrAddRoom: 'Tambah Kamar',
     qrPrintAll: 'Cetak Semua',
-    qrDownloadPdf: 'Unduh PDF',
+    qrDownloadAll: 'Unduh Semua',
     qrGeneratingPdf: 'Membuat PDF...',
     qrNoRooms: 'Belum ada kamar. Tambahkan untuk membuat kode QR.',
     qrDownload: 'Unduh QR',

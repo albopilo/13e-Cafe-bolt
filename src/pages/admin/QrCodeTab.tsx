@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import QRCode from 'qrcode';
-import { jsPDF } from 'jspdf';
+import JSZip from 'jszip';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useLang } from '@/context/LanguageContext';
 import type { RoomTable } from '@/lib/types';
-import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil, FileText } from 'lucide-react';
+import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil, FolderDown } from 'lucide-react';
 
 const BASE_URL = 'https://13ecafe.netlify.app';
 
@@ -195,11 +195,11 @@ export function QrCodeTab() {
   const [showForm, setShowForm] = useState(false);
   const [editingRoom, setEditingRoom] = useState<RoomTable | null>(null);
   const [printMode, setPrintMode] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
+  const [zipLoading, setZipLoading] = useState(false);
 
-  const handleDownloadPdf = async () => {
+  const handleDownloadAll = async () => {
     if (rooms.length === 0) return;
-    setPdfLoading(true);
+    setZipLoading(true);
     try {
       const posterTexts = {
         cafeName: '13e Cafe',
@@ -211,45 +211,25 @@ export function QrCodeTab() {
         qrisOnly: t('qrisOnly'),
       };
 
-      const posters: HTMLCanvasElement[] = [];
+      const zip = new JSZip();
       for (const room of rooms) {
-        posters.push(await generatePosterCanvas(room, posterTexts, 2));
+        const poster = await generatePosterCanvas(room, posterTexts, 2);
+        const dataUrl = poster.toDataURL('image/png');
+        const base64 = dataUrl.split(',')[1];
+        zip.file(`qr-${room.name.replace(/\s+/g, '-')}.png`, base64, { base64: true });
       }
 
-      // F4 paper in mm: 210 x 330
-      const F4_W = 210;
-      const F4_H = 330;
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [F4_W, F4_H] });
-
-      const margin = 10;
-      const availW = F4_W - margin * 2;
-      const availH = F4_H - margin * 2;
-
-      for (let i = 0; i < posters.length; i++) {
-        const poster = posters[i];
-        const imgData = poster.toDataURL('image/png');
-
-        // Fit poster within available area, preserving aspect ratio
-        const posterRatio = poster.width / poster.height;
-        let drawW = availW;
-        let drawH = drawW / posterRatio;
-        if (drawH > availH) {
-          drawH = availH;
-          drawW = drawH * posterRatio;
-        }
-        const x = (F4_W - drawW) / 2;
-        const y = (F4_H - drawH) / 2;
-
-        if (i > 0) pdf.addPage([F4_W, F4_H], 'portrait');
-        pdf.addImage(imgData, 'PNG', x, y, drawW, drawH);
-      }
-
-      pdf.save('qr-codes-all-rooms.pdf');
+      const blob = await zip.generateAsync({ type: 'blob' });
+      const link = document.createElement('a');
+      link.download = 'qr-codes-all-rooms.zip';
+      link.href = URL.createObjectURL(blob);
+      link.click();
+      URL.revokeObjectURL(link.href);
       addToast(t('qrSaved'), 'success');
     } catch {
       addToast(t('qrSaveFailed'), 'error');
     } finally {
-      setPdfLoading(false);
+      setZipLoading(false);
     }
   };
 
@@ -292,9 +272,9 @@ export function QrCodeTab() {
         <button onClick={() => setPrintMode(true)} disabled={rooms.length === 0} className="btn-secondary text-sm py-2.5 flex items-center gap-1.5 disabled:opacity-50">
           <Printer className="w-4 h-4" /> {t('qrPrintAll')}
         </button>
-        <button onClick={handleDownloadPdf} disabled={rooms.length === 0 || pdfLoading} className="btn-secondary text-sm py-2.5 flex items-center gap-1.5 disabled:opacity-50">
-          {pdfLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
-          {pdfLoading ? t('qrGeneratingPdf') : t('qrDownloadPdf')}
+        <button onClick={handleDownloadAll} disabled={rooms.length === 0 || zipLoading} className="btn-secondary text-sm py-2.5 flex items-center gap-1.5 disabled:opacity-50">
+          {zipLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FolderDown className="w-4 h-4" />}
+          {zipLoading ? t('qrGeneratingPdf') : t('qrDownloadAll')}
         </button>
       </div>
 
