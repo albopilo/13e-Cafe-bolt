@@ -9,7 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useLang } from '@/context/LanguageContext';
 import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck, Receipt, Languages } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -21,9 +21,8 @@ export function MenuPage() {
     const params = new URLSearchParams(window.location.search);
     const table = params.get('table');
     if (table) {
-      const decoded = table.replace(/-/g, ' ');
-      localStorage.setItem('cafe13_table', decoded);
-      return decoded;
+      localStorage.setItem('cafe13_table', table);
+      return table;
     }
     return localStorage.getItem('cafe13_table') || 'Takeaway';
   });
@@ -32,8 +31,24 @@ export function MenuPage() {
   const { addToast } = useToast();
   const { lang, toggleLang, t } = useLang();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const opStatus = useMemo(() => getOperationalStatus(lang), [lang]);
+
+  useEffect(() => {
+    const table = new URLSearchParams(location.search).get('table');
+    if (table) {
+      localStorage.setItem('cafe13_table', table);
+      setTableParam(table);
+      return;
+    }
+
+    const savedTable = localStorage.getItem('cafe13_table');
+    if (savedTable) {
+      setTableParam(savedTable);
+      navigate({ pathname: '/', search: `?table=${encodeURIComponent(savedTable)}` }, { replace: true });
+    }
+  }, [location.search, navigate]);
 
   useEffect(() => {
     setHoursPopup(true);

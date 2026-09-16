@@ -1,6 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import QRCode from 'qrcode';
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
@@ -19,8 +18,6 @@ export function QrisPaymentPage() {
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [qrDataUrl, setQrDataUrl] = useState<string>('');
-  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     return () => {
@@ -50,21 +47,6 @@ export function QrisPaymentPage() {
       }
     })();
   }, [orderId, navigate]);
-
-  useEffect(() => {
-    if (!order || !canvasRef.current) return;
-    const payload = `13e-cafe-qris|${order.table_name}|${order.grand_total}`;
-    QRCode.toCanvas(canvasRef.current, payload, {
-      width: 320,
-      margin: 2,
-      color: { dark: '#3b2417', light: '#ffffff' },
-      errorCorrectionLevel: 'M',
-    }, (err) => {
-      if (!err && canvasRef.current) {
-        setQrDataUrl(canvasRef.current.toDataURL('image/png'));
-      }
-    });
-  }, [order]);
 
   const handleUpload = async () => {
     if (!file || !orderId) return;
@@ -116,17 +98,19 @@ export function QrisPaymentPage() {
             </div>
 
             <div className="bg-white p-3 sm:p-5 rounded-2xl border-2 border-cream-200 mb-4 mx-auto max-w-sm">
-              <canvas ref={canvasRef} className="block w-full h-auto max-w-[320px] mx-auto rounded-xl" />
+              <img
+                src="/images/qris_versi_1%20copy.jpeg"
+                alt="13E Cafe official QRIS payment code"
+                className="block w-full h-auto max-h-[min(68vh,560px)] object-contain rounded-xl"
+              />
             </div>
-            {qrDataUrl && (
-              <a
-                href={qrDataUrl}
-                download="13e-cafe-qris.png"
-                className="btn-secondary inline-flex items-center justify-center gap-2 text-sm py-2.5 mb-4"
-              >
-                <Download className="w-4 h-4" /> Download QRIS
-              </a>
-            )}
+            <a
+              href="/images/qris_versi_1%20copy.jpeg"
+              download="13e-cafe-qris.jpeg"
+              className="btn-secondary inline-flex items-center justify-center gap-2 text-sm py-2.5 mb-4"
+            >
+              <Download className="w-4 h-4" /> Download QRIS
+            </a>
 
             <p className="text-2xl font-bold text-espresso-600 mb-1">{formatRupiah(order.grand_total)}</p>
             <p className="text-sm text-espresso-300 mb-4">Table: {order.table_name}</p>
