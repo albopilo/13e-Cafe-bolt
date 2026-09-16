@@ -7,6 +7,7 @@ import { formatRupiah, formatTimeElapsed } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { usePushNotifications } from '@/lib/usePushNotifications';
 
 const ALL_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
 const FILTER_TABS = ['All', 'Incoming', 'Served', 'Cancelled'] as const;
@@ -16,6 +17,7 @@ export function StaffDashboard() {
   const { addToast } = useToast();
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  usePushNotifications();
 
   const [orders, setOrders] = useState<Map<string, Order>>(new Map());
   const [location, setLocation] = useState('All');

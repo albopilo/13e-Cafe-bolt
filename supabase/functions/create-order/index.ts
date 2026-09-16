@@ -12,6 +12,139 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 
+// Firebase service account JSON (stored as FCM_SERVICE_ACCOUNT secret)
+const FCM_SERVICE_ACCOUNT = Deno.env.get("FCM_SERVICE_ACCOUNT") ?? "";
+const FCM_PROJECT_ID = Deno.env.get("FCM_PROJECT_ID") ?? "";
+
+interface FcmPayload {
+  title: string;
+  body: string;
+  data?: Record<string, string>;
+  tag?: string;
+}
+
+let cachedAccessToken: string | null = null;
+let tokenExpiry = 0;
+
+async function getFcmAccessToken(): Promise<string | null> {
+  if (cachedAccessToken && Date.now() < tokenExpiry) return cachedAccessToken;
+  if (!FCM_SERVICE_ACCOUNT) return null;
+
+  try {
+    const serviceAccount = JSON.parse(FCM_SERVICE_ACCOUNT);
+    const now = Math.floor(Date.now() / 1000);
+    const payload = {
+      iss: serviceAccount.client_email,
+      scope: "https://www.googleapis.com/auth/firebase.messaging",
+      aud: "https://oauth2.googleapis.com/token",
+      exp: now + 3600,
+      iat: now,
+    };
+
+    // Manual JWT creation (no external crypto libs needed)
+    const header = { alg: "RS256", typ: "JWT" };
+    const enc = (obj: Record<string, unknown>) =>
+      btoa(JSON.stringify(obj)).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+
+    const toSign = `${enc(header)}.${enc(payload)}`;
+
+    // Use Web Crypto API to sign with RSA private key
+    const keyData = {
+      kty: "RSA",
+      n: serviceAccount.private_key.match(/-----BEGIN PRIVATE KEY-----\n([\s\S]*?)\n-----END PRIVATE KEY-----/)?.[1]
+        ?.replace(/\n/g, "")
+        ?.replace(/\+/g, "-")
+        ?.replace(/\//g, "_"),
+      e: "AQAB",
+      d: "",
+      p: "",
+      q: "",
+      dp: "",
+      dq: "",
+      qi: "",
+    };
+
+    // Import the PKCS8 key properly
+    const pemKey = serviceAccount.private_key;
+    const pemContents = pemKey
+      .replace(/-----BEGIN PRIVATE KEY-----/, "")
+      .replace(/-----END PRIVATE KEY-----/, "")
+      .replace(/\n/g, "");
+    const binaryDer = Uint8Array.from(atob(pemContents), (c) => c.charCodeAt(0));
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "pkcs8",
+      binaryDer,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["sign"],
+    );
+
+    const signature = await crypto.subtle.sign(
+      "RSASSA-PKCS1-v1_5",
+      cryptoKey,
+      new TextEncoder().encode(toSign),
+    );
+
+    const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature)))
+      .replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+
+    const jwt = `${toSign}.${sigB64}`;
+
+    const tokenResp = await fetch("https://oauth2.googleapis.com/token", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=${jwt}`,
+    });
+
+    if (!tokenResp.ok) return null;
+    const tokenData = await tokenResp.json();
+    cachedAccessToken = tokenData.access_token;
+    tokenExpiry = Date.now() + (tokenData.expires_in - 60) * 1000;
+    return cachedAccessToken;
+  } catch {
+    return null;
+  }
+}
+
+async function sendFcmNotifications(tokens: string[], payload: FcmPayload) {
+  if (tokens.length === 0) return;
+  const accessToken = await getFcmAccessToken();
+  if (!accessToken || !FCM_PROJECT_ID) return;
+
+  const baseUrl = `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`;
+
+  const promises = tokens.map((token) =>
+    fetch(baseUrl, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message: {
+          token,
+          notification: { title: payload.title, body: payload.body },
+          data: payload.data || {},
+          android: {
+            priority: "high",
+            notification: { sound: "default", tag: payload.tag || "new-order" },
+          },
+          webpush: {
+            notification: {
+              requireInteraction: true,
+              tag: payload.tag || "new-order",
+              icon: "/vite.svg",
+            },
+            fcmOptions: { link: payload.data?.url || "/staff" },
+          },
+        },
+      }),
+    }).catch(() => {})
+  );
+  await Promise.all(promises);
+}
+
 const TIER_DISCOUNTS: Record<string, number> = {
   Classic: 0,
   Bronze: 0.10,
@@ -273,15 +406,19 @@ Deno.serve(async (req: Request) => {
       }
     }
 
-    // Send push notification to staff (best-effort)
+    // Send FCM push notification to staff (best-effort)
     try {
       const { data: tokens } = await supabase
         .from("staff_push_tokens")
-        .select("token")
-        .eq("role", "staff");
+        .select("token, role")
+        .in("role", ["staff", "admin"]);
       if (tokens && tokens.length > 0) {
-        // Push notification would go here via OneSignal or similar service
-        // For now, we just log — the staff dashboard uses realtime subscriptions
+        await sendFcmNotifications(tokens.map((t: { token: string }) => t.token), {
+          title: "New Order!",
+          body: `Table ${table_name} — ${items.length} item${items.length > 1 ? "s" : ""}`,
+          data: { order_id: order.id, table_name, url: "/staff" },
+          tag: "new-order",
+        });
       }
     } catch {
       // Push failed — not critical
