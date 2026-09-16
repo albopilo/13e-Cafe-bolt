@@ -66,7 +66,24 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { order_id, new_status, changed_by } = await req.json();
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Authentication required" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: userData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !userData.user) {
+      return new Response(JSON.stringify({ error: "Invalid authentication" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const changed_by = userData.user.id;
+
+    const { order_id, new_status } = await req.json();
 
     if (!order_id || !new_status) {
       return new Response(JSON.stringify({ error: "Order ID and new status are required" }), {
@@ -98,33 +115,31 @@ Deno.serve(async (req: Request) => {
     }
 
     // Verify the user is authorized to update this order
-    if (changed_by) {
-      const { data: admin } = await supabase
-        .from("admins")
-        .select("user_id")
+    const { data: admin } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", changed_by)
+      .maybeSingle();
+
+    if (!admin) {
+      const { data: staff } = await supabase
+        .from("staff")
+        .select("assigned_location")
         .eq("user_id", changed_by)
         .maybeSingle();
 
-      if (!admin) {
-        const { data: staff } = await supabase
-          .from("staff")
-          .select("assigned_location")
-          .eq("user_id", changed_by)
-          .maybeSingle();
+      if (!staff) {
+        return new Response(JSON.stringify({ error: "You are not authorized to update orders" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-        if (!staff) {
-          return new Response(JSON.stringify({ error: "You are not authorized to update orders" }), {
-            status: 403,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        if (!order.table_name.startsWith(staff.assigned_location)) {
-          return new Response(JSON.stringify({ error: "You can only manage orders from your assigned location" }), {
-            status: 403,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
+      if (!order.table_name.startsWith(staff.assigned_location)) {
+        return new Response(JSON.stringify({ error: "You can only manage orders from your assigned location" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
     }
 

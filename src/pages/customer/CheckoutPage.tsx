@@ -8,7 +8,7 @@ import { isQrisOnly, getDeliveryFee } from '@/lib/categories';
 import { getTableName } from '@/lib/cart';
 import { TIER_CONFIGS } from '@/lib/loyalty';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CreditCard, Banknote, Tag, Loader2 } from 'lucide-react';
+import { ArrowLeft, CreditCard, Banknote, Tag, Loader2, Phone } from 'lucide-react';
 
 export function CheckoutPage() {
   const { items, clear } = useCart();
@@ -69,6 +69,15 @@ export function CheckoutPage() {
       addToast('Cart is empty', 'error');
       return;
     }
+    const trimmedPhone = phone.trim();
+    if (!trimmedPhone) {
+      addToast('Please enter your phone number to place an order.', 'error');
+      return;
+    }
+    if (trimmedPhone.length < 8 || !/^[0-9+\s-]+$/.test(trimmedPhone)) {
+      addToast('Please enter a valid phone number.', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-order`, {
@@ -88,7 +97,7 @@ export function CheckoutPage() {
           member_id: member?.user_id || null,
           table_name: tableName,
           payment_method: paymentMethod,
-          phone: phone || null,
+          phone: trimmedPhone,
           voucher_code: voucherApplied ? voucherCode.trim() : null,
         }),
       });
@@ -219,20 +228,20 @@ export function CheckoutPage() {
           </div>
         </div>
 
-        {/* Phone (for guests) */}
-        {!member && (
-          <div className="card p-4">
-            <h3 className="font-display font-semibold text-espresso-600 mb-2">Phone Number</h3>
-            <input
-              type="tel"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-              placeholder="08xx..."
-              className="input-field text-sm py-2.5"
-            />
-            <p className="text-xs text-espresso-300 mt-1">So staff can contact you about your order.</p>
-          </div>
-        )}
+        {/* Phone number — required for all orders */}
+        <div className="card p-4">
+          <h3 className="font-display font-semibold text-espresso-600 mb-2 flex items-center gap-2">
+            <Phone className="w-4 h-4" /> Phone Number
+          </h3>
+          <input
+            type="tel"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            placeholder="08xx..."
+            className="input-field text-sm py-2.5"
+          />
+          <p className="text-xs text-espresso-300 mt-1">Required so staff can contact you about your order.</p>
+        </div>
 
         {/* Payment method */}
         <div className="card p-4">

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/AuthContext';
 import { formatRupiah } from '@/lib/format';
-import { ArrowLeft, Upload, Loader2, CheckCircle2, QrCode } from 'lucide-react';
+import { ArrowLeft, Upload, Loader2, CheckCircle2, QrCode, Download } from 'lucide-react';
 
 export function QrisPaymentPage() {
   const [params] = useSearchParams();
@@ -17,6 +17,12 @@ export function QrisPaymentPage() {
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (file) URL.revokeObjectURL(URL.createObjectURL(file));
+    };
+  }, [file]);
 
   useEffect(() => {
     if (!orderId) {
@@ -85,13 +91,20 @@ export function QrisPaymentPage() {
               <h2 className="font-display font-semibold text-espresso-600">Scan to Pay</h2>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border-2 border-cream-200 inline-block mb-4">
+            <div className="bg-white p-3 sm:p-5 rounded-2xl border-2 border-cream-200 mb-4 mx-auto max-w-sm">
               <img
-                src="/images/image.png"
-                alt="QRIS Scan to Pay"
-                className="w-48 h-48 object-contain rounded-xl"
+                src="/images/qris_versi_1.jpeg"
+                alt="13E Cafe QRIS payment code"
+                className="block w-full h-auto max-h-[min(68vh,560px)] object-contain rounded-xl"
               />
             </div>
+            <a
+              href="/images/qris_versi_1.jpeg"
+              download="13e-cafe-qris.jpeg"
+              className="btn-secondary inline-flex items-center justify-center gap-2 text-sm py-2.5 mb-4"
+            >
+              <Download className="w-4 h-4" /> Download QRIS
+            </a>
 
             <p className="text-2xl font-bold text-espresso-600 mb-1">{formatRupiah(order.grand_total)}</p>
             <p className="text-sm text-espresso-300 mb-4">Table: {order.table_name}</p>
@@ -120,8 +133,8 @@ export function QrisPaymentPage() {
                     <div>
                       <img
                         src={URL.createObjectURL(file)}
-                        alt="Payment proof"
-                        className="max-h-40 mx-auto rounded-lg mb-2"
+                        alt="Payment proof preview"
+                        className="block w-full max-h-56 object-contain mx-auto rounded-lg mb-2"
                       />
                       <p className="text-sm text-espresso-500">{file.name}</p>
                     </div>

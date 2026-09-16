@@ -42,6 +42,20 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const { items, member_id, table_name, payment_method, phone, voucher_code } = body;
 
+    // Verify member_id belongs to the authenticated user
+    let verifiedMemberId = member_id || null;
+    const authHeader = req.headers.get("Authorization");
+    if (verifiedMemberId && authHeader) {
+      const token = authHeader.replace("Bearer ", "");
+      const { data: userData, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !userData.user || userData.user.id !== verifiedMemberId) {
+        return new Response(JSON.stringify({ error: "Member ID does not match authenticated user" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: "Cart is empty" }), {
         status: 400,
@@ -50,6 +64,12 @@ Deno.serve(async (req: Request) => {
     }
     if (!table_name) {
       return new Response(JSON.stringify({ error: "Table name is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!phone || typeof phone !== "string" || phone.trim().length < 8 || !/^[0-9+\s-]+$/.test(phone.trim())) {
+      return new Response(JSON.stringify({ error: "A valid phone number is required to place an order" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });

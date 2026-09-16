@@ -154,7 +154,6 @@ export function StaffDashboard() {
         body: JSON.stringify({
           order_id: orderId,
           new_status: newStatus,
-          changed_by: session?.user?.id || null,
         }),
       });
 

@@ -28,6 +28,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const initialLoadDone = useRef(false);
+  const profileLoaded = useRef(false);
 
   const loadProfile = async (userId: string) => {
     const [mRes, aRes, sRes] = await Promise.all([
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setMember(mRes.data as Member | null);
     setIsAdmin(!!aRes.data);
     setStaff(sRes.data as StaffProfile | null);
+    profileLoaded.current = true;
   };
 
   useEffect(() => {
@@ -63,14 +65,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setMember(null);
         setIsAdmin(false);
         setStaff(null);
+        profileLoaded.current = false;
         setLoading(false);
         return;
       }
 
       if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
-        // Session refreshed silently — user is still the same, no need to reload profile
-        // unless we don't have profile data yet
-        if (newSession?.user && !member && !isAdmin && !staff) {
+        if (newSession?.user && !profileLoaded.current) {
           loadProfile(newSession.user.id);
         }
         return;
@@ -84,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setMember(null);
         setIsAdmin(false);
         setStaff(null);
+        profileLoaded.current = false;
         setLoading(false);
       }
     });
