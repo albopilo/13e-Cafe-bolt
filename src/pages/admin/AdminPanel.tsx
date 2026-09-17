@@ -12,7 +12,6 @@ import { MemberDetailModal } from '@/pages/admin/MemberDetailModal';
 import { MemberForm } from '@/pages/admin/MemberForm';
 import { SettingsTab } from '@/pages/admin/SettingsTab';
 import { QrCodeTab } from '@/pages/admin/QrCodeTab';
-import { PwaInstallButton } from '@/components/PwaInstallButton';
 
 type Tab = 'dashboard' | 'products' | 'promos' | 'vouchers' | 'members' | 'staff' | 'qrcodes' | 'settings';
 
@@ -53,7 +52,6 @@ export function AdminPanel() {
             >
               <LayoutDashboard className="w-4 h-4" /> Staff
             </button>
-            <PwaInstallButton />
             <button onClick={signOut} className="text-sm px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors">
               Logout
             </button>

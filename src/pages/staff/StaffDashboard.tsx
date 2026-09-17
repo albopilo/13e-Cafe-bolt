@@ -7,8 +7,6 @@ import { formatRupiah, formatTimeElapsed } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ShieldCheck, BellRing } from 'lucide-react';
-import { usePushNotifications } from '@/lib/usePushNotifications';
-import { PwaInstallButton } from '@/components/PwaInstallButton';
 import { playNotificationRing, unlockAudio, startRepeatingRing } from '@/lib/notificationSound';
 
 const ALL_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
@@ -19,8 +17,6 @@ export function StaffDashboard() {
   const { addToast } = useToast();
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  usePushNotifications();
-
   const [orders, setOrders] = useState<Map<string, Order>>(new Map());
   const [location, setLocation] = useState('All');
   const [filterTab, setFilterTab] = useState<typeof FILTER_TABS[number]>('All');
@@ -236,7 +232,6 @@ export function StaffDashboard() {
                 <ShieldCheck className="w-4 h-4" /> Admin
               </button>
             )}
-            <PwaInstallButton />
             <button
               onClick={() => {
                 if (!audioUnlocked) {
