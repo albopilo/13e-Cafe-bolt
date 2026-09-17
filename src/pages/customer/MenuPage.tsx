@@ -9,6 +9,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { useLang } from '@/context/LanguageContext';
 import { ShoppingCart, Clock, Coffee, X, User, LogOut, LayoutDashboard, ShieldCheck, Receipt, Languages } from 'lucide-react';
+import { PwaInstallButton } from '@/components/PwaInstallButton';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
@@ -115,6 +116,7 @@ export function MenuPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <PwaInstallButton />
             {/* Language toggle */}
             <button
               onClick={toggleLang}
