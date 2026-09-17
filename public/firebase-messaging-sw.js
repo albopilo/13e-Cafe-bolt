@@ -13,36 +13,79 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// Background push: fires when app is NOT open (or minimized).
-// We MUST build the notification here so the user hears the sound.
+// Firebase SDK background handler (secondary — the raw push handler below is primary)
 messaging.onBackgroundMessage((payload) => {
-  const notificationTitle = payload.notification?.title || "New Order";
-  const notificationOptions = {
-    body: payload.notification?.body || "You have a new order",
-    icon: "/vite.svg",
-    badge: "/vite.svg",
+  const title = payload.notification?.title || "New Order";
+  const body = payload.notification?.body || "You have a new order";
+  self.registration.showNotification(title, {
+    body,
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
     tag: "new-order",
     requireInteraction: true,
     renotify: true,
     vibrate: [200, 100, 200, 100, 200, 100, 400],
-    data: payload.data || {},
+    data: { url: "/staff", ...(payload.data || {}) },
+  });
+});
+
+// Raw push event handler — this is the CRITICAL one.
+// It fires even if Firebase CDN scripts failed to load, and gives us
+// full control over notification display. This is what makes notifications
+// work when the app is completely closed.
+self.addEventListener("push", (event) => {
+  let payload;
+  try {
+    payload = event.data ? event.data.json() : {};
+  } catch {
+    try {
+      payload = { notification: { title: "New Order", body: event.data ? event.data.text() : "You have a new order" } };
+    } catch {
+      payload = { notification: { title: "New Order", body: "You have a new order" } };
+    }
+  }
+
+  // Support both "notification" and "data" payload styles
+  const notification = payload.notification || {};
+  const data = payload.data || {};
+
+  const title = notification.title || data.title || "New Order!";
+  const body = notification.body || data.body || "You have a new order";
+
+  const options = {
+    body,
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
+    tag: "new-order",
+    requireInteraction: true,
+    renotify: true,
+    vibrate: [200, 100, 200, 100, 200, 100, 400],
+    data: { url: data.url || "/staff", ...data },
   };
-  self.registration.showNotification(notificationTitle, notificationOptions);
+
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener("notificationclick", function (event) {
   event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) || "/staff";
   event.waitUntil(
     clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
         for (const client of clientList) {
-          if (client.url.includes("/staff") && "focus" in client) {
+          if (client.url.includes(targetUrl) && "focus" in client) {
             return client.focus();
           }
         }
+        for (const client of clientList) {
+          if ("focus" in client) {
+            client.focus();
+            return client.navigate(targetUrl);
+          }
+        }
         if (clients.openWindow) {
-          return clients.openWindow("/staff");
+          return clients.openWindow(targetUrl);
         }
       })
   );
@@ -69,7 +112,7 @@ self.addEventListener("fetch", (event) => {
           const networkResponse = await fetch(request);
           return networkResponse;
         } catch {
-          const cache = await caches.open("cafe13-shell-v1");
+          const cache = await caches.open("cafe13-shell-v2");
           const cached = await cache.match("/index.html");
           return cached || new Response("Offline", { status: 503 });
         }
@@ -81,7 +124,7 @@ self.addEventListener("fetch", (event) => {
   // Static assets — cache-first
   event.respondWith(
     (async () => {
-      const cache = await caches.open("cafe13-assets-v1");
+      const cache = await caches.open("cafe13-assets-v2");
       const cached = await cache.match(request);
       if (cached) return cached;
       try {
@@ -100,12 +143,13 @@ self.addEventListener("fetch", (event) => {
 // Pre-cache the app shell on install
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open("cafe13-shell-v1").then((cache) =>
+    caches.open("cafe13-shell-v2").then((cache) =>
       cache.addAll([
         "/",
         "/index.html",
-        "/vite.svg",
         "/manifest.json",
+        "/icon-192.png",
+        "/icon-512.png",
       ]).catch(() => {})
     )
   );
@@ -117,7 +161,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((names) =>
       Promise.all(
         names
-          .filter((n) => n !== "cafe13-shell-v1" && n !== "cafe13-assets-v1")
+          .filter((n) => n !== "cafe13-shell-v2" && n !== "cafe13-assets-v2")
           .map((n) => caches.delete(n))
       )
     )

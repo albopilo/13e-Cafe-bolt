@@ -114,6 +114,20 @@ async function sendFcmNotifications(tokens: string[], payload: FcmPayload) {
 
   const baseUrl = `https://fcm.googleapis.com/v1/projects/${FCM_PROJECT_ID}/messages:send`;
 
+  // Send as DATA-ONLY message (no "notification" field at top level).
+  // This ensures the service worker's push event fires on ALL platforms,
+  // giving us full control over notification display, sound, and vibration.
+  // The SW push handler reads title/body/url from the data payload.
+  const data: Record<string, string> = {
+    title: payload.title,
+    body: payload.body,
+    url: payload.data?.url || "/staff",
+    tag: payload.tag || "new-order",
+    ...Object.fromEntries(
+      Object.entries(payload.data || {}).filter(([k]) => k !== "url")
+    ),
+  };
+
   const promises = tokens.map((token) =>
     fetch(baseUrl, {
       method: "POST",
@@ -124,21 +138,21 @@ async function sendFcmNotifications(tokens: string[], payload: FcmPayload) {
       body: JSON.stringify({
         message: {
           token,
-          notification: { title: payload.title, body: payload.body },
-          data: payload.data || {},
-          android: {
-            priority: "high",
-            notification: { sound: "default", tag: payload.tag || "new-order" },
-          },
+          data,
+          android: { priority: "high" },
           webpush: {
-            notification: {
-              requireInteraction: true,
-              renotify: true,
-              tag: payload.tag || "new-order",
-              icon: "/vite.svg",
-              vibrate: [200, 100, 200, 100, 200, 100, 400],
+            headers: { Urgency: "high" },
+            fcmOptions: { link: data.url },
+          },
+          apns: {
+            headers: { "apns-priority": "10", "apns-push-type": "background" },
+            payload: {
+              aps: {
+                "content-available": 1,
+                sound: "default",
+                badge: 1,
+              },
             },
-            fcmOptions: { link: payload.data?.url || "/staff" },
           },
         },
       }),
