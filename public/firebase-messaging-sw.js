@@ -23,6 +23,8 @@ messaging.onBackgroundMessage((payload) => {
     badge: "/vite.svg",
     tag: "new-order",
     requireInteraction: true,
+    renotify: true,
+    vibrate: [200, 100, 200, 100, 200, 100, 400],
     data: payload.data || {},
   };
   self.registration.showNotification(notificationTitle, notificationOptions);

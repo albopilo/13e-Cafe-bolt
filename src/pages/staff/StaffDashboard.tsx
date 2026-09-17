@@ -6,9 +6,10 @@ import type { Order } from '@/lib/types';
 import { formatRupiah, formatTimeElapsed } from '@/lib/format';
 import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ShieldCheck, BellRing } from 'lucide-react';
 import { usePushNotifications } from '@/lib/usePushNotifications';
 import { PwaInstallButton } from '@/components/PwaInstallButton';
+import { playNotificationRing, unlockAudio, startRepeatingRing } from '@/lib/notificationSound';
 
 const ALL_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
 const FILTER_TABS = ['All', 'Incoming', 'Served', 'Cancelled'] as const;
@@ -25,12 +26,13 @@ export function StaffDashboard() {
   const [filterTab, setFilterTab] = useState<typeof FILTER_TABS[number]>('All');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(true);
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const [dismissedOrders, setDismissedOrders] = useState<Set<string>>(new Set());
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const chimeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const stopRingRef = useRef<(() => void) | null>(null);
   const focusOrderId = params.get('orderId');
   const prevOrderIds = useRef<Set<string>>(new Set());
+  const newOrderIdsRef = useRef<Set<string>>(new Set());
 
   const availableLocations = useMemo(() => {
     if (isAdmin) return ['All', ...ALL_LOCATIONS];
@@ -46,16 +48,26 @@ export function StaffDashboard() {
     }
   }, [staff, isAdmin]);
 
+  // Unlock audio on first user interaction (required by mobile browsers)
   useEffect(() => {
-    audioRef.current = new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');
-    audioRef.current.volume = 0.5;
-  }, []);
+    if (audioUnlocked) return;
+    const unlock = () => {
+      unlockAudio();
+      setAudioUnlocked(true);
+    };
+    window.addEventListener('pointerdown', unlock, { once: true });
+    window.addEventListener('keydown', unlock, { once: true });
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [audioUnlocked]);
 
   const playChime = useCallback(() => {
-    if (audioRef.current && audioEnabled) {
-      audioRef.current.play().catch(() => {});
+    if (audioEnabled && audioUnlocked) {
+      playNotificationRing();
     }
-  }, [audioEnabled]);
+  }, [audioEnabled, audioUnlocked]);
 
   const fetchOrders = useCallback(async () => {
     const { data, error } = await supabase
@@ -115,30 +127,31 @@ export function StaffDashboard() {
     };
   }, [selectedDate, playChime]);
 
+  // Repeating ring while there are un-dismissed pending orders
   useEffect(() => {
-    if (chimeIntervalRef.current) {
-      clearInterval(chimeIntervalRef.current);
-      chimeIntervalRef.current = null;
+    // Stop any existing repeating ring
+    if (stopRingRef.current) {
+      stopRingRef.current();
+      stopRingRef.current = null;
     }
 
-    if (!audioEnabled) return;
+    if (!audioEnabled || !audioUnlocked) return;
 
     const hasPendingOrders = Array.from(orders.values()).some(o =>
       o.status === 'pending' && !dismissedOrders.has(o.id)
     );
 
     if (hasPendingOrders) {
-      chimeIntervalRef.current = setInterval(() => {
-        playChime();
-      }, 5000);
+      stopRingRef.current = startRepeatingRing(4000);
     }
 
     return () => {
-      if (chimeIntervalRef.current) {
-        clearInterval(chimeIntervalRef.current);
+      if (stopRingRef.current) {
+        stopRingRef.current();
+        stopRingRef.current = null;
       }
     };
-  }, [orders, audioEnabled, dismissedOrders, playChime]);
+  }, [orders, audioEnabled, audioUnlocked, dismissedOrders]);
 
   useEffect(() => {
     if (focusOrderId) {
@@ -196,12 +209,6 @@ export function StaffDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <button
-              onClick={() => navigate('/')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-espresso-700 hover:bg-espresso-800 transition-colors text-sm font-medium"
-            >
-              <ArrowLeft className="w-4 h-4" /> Menu
-            </button>
             {isAdmin && (
               <button
                 onClick={() => navigate('/admin')}
@@ -212,8 +219,14 @@ export function StaffDashboard() {
             )}
             <PwaInstallButton />
             <button
-              onClick={() => setAudioEnabled(!audioEnabled)}
-              className="p-2 rounded-lg hover:bg-espresso-700 transition-colors"
+              onClick={() => {
+                if (!audioUnlocked) {
+                  unlockAudio();
+                  setAudioUnlocked(true);
+                }
+                setAudioEnabled(!audioEnabled);
+              }}
+              className={`p-2 rounded-lg transition-colors ${audioEnabled ? 'bg-amber-400 text-espresso-700' : 'hover:bg-espresso-700'}`}
               title={audioEnabled ? 'Mute alerts' : 'Enable alerts'}
             >
               {audioEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
@@ -270,6 +283,14 @@ export function StaffDashboard() {
           </div>
         </div>
       </header>
+
+      {/* Audio unlock banner — shown until user interacts to enable sound */}
+      {!audioUnlocked && (
+        <div className="bg-amber-400 text-espresso-800 px-4 py-2 text-center text-sm font-medium sticky top-[113px] z-30 flex items-center justify-center gap-2">
+          <BellRing className="w-4 h-4" />
+          <span>Tap anywhere to enable order notification sounds</span>
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto px-4 py-4">
         {loading ? (

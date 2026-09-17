@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { messaging, getToken, onMessage } from '@/lib/firebase';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { playNotificationRing, unlockAudio } from '@/lib/notificationSound';
 
 const VAPID_KEY = 'BB46kklO696abLSqlK13UKbJh5zCJR-ZCjNa4j4NE08X7JOSJM_IpsJIjsLck4Aqx9QEnQ6Rid4gjLhk1cNjd2w';
 
@@ -50,6 +51,9 @@ export function usePushNotifications() {
       const unsub = onMessage(messaging, (payload) => {
         const title = payload.notification?.title || 'New Order';
         const body = payload.notification?.body || 'You have a new order';
+
+        // Play the ringing sound in foreground
+        playNotificationRing();
 
         if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
           navigator.serviceWorker.ready.then((reg) => {

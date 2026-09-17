@@ -133,8 +133,10 @@ async function sendFcmNotifications(tokens: string[], payload: FcmPayload) {
           webpush: {
             notification: {
               requireInteraction: true,
+              renotify: true,
               tag: payload.tag || "new-order",
               icon: "/vite.svg",
+              vibrate: [200, 100, 200, 100, 200, 100, 400],
             },
             fcmOptions: { link: payload.data?.url || "/staff" },
           },
