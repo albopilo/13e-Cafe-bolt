@@ -45,6 +45,30 @@ export function OrderHistoryPage() {
     })();
   }, [member, authLoading, navigate, addToast]);
 
+  // Realtime subscription for logged-in members — updates order status live
+  useEffect(() => {
+    if (!member || authLoading) return;
+
+    const channel = supabase
+      .channel('member-order-updates')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, (payload) => {
+        const updated = payload.new as { id: string; status: string; payment_status: string; member_id: string };
+        if (updated.member_id !== member.user_id) return;
+        setOrders(prev => {
+          const idx = prev.findIndex(o => o.id === updated.id);
+          if (idx === -1) return prev;
+          const copy = [...prev];
+          copy[idx] = { ...copy[idx], status: updated.status as Order['status'], payment_status: updated.payment_status as Order['payment_status'] };
+          return copy;
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [member, authLoading]);
+
   useEffect(() => {
     if (member || authLoading) return;
     const guestOrders = getGuestOrders();

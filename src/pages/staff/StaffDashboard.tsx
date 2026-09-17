@@ -120,12 +120,31 @@ export function StaffDashboard() {
           return newMap;
         });
       })
-      .subscribe();
+      .on('system', { event: 'disconnect' }, () => {
+        prevOrderIds.current = new Set();
+      })
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          if (prevOrderIds.current.size === 0) return;
+          fetchOrders();
+        }
+      });
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedDate, playChime]);
+  }, [selectedDate, playChime, fetchOrders]);
+
+  // Refetch orders when tab becomes visible again (safety net for dropped realtime)
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        fetchOrders();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [fetchOrders]);
 
   // Repeating ring while there are un-dismissed pending orders
   useEffect(() => {
