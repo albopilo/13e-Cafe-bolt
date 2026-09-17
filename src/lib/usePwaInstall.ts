@@ -5,12 +5,7 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-const STAFF_PATHS = ['/staff', '/admin'];
 const DISMISS_KEY = 'cafe13_pwa_dismissed';
-
-function isStaffPath(pathname: string): boolean {
-  return STAFF_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'));
-}
 
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
@@ -50,5 +45,3 @@ export function usePwaInstall() {
 
   return { canShow, promptInstall, installed };
 }
-
-export { isStaffPath };

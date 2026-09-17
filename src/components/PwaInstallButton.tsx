@@ -8,9 +8,10 @@ export function PwaInstallButton({ className = '' }: { className?: string }) {
     <button
       onClick={promptInstall}
       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-400 text-espresso-700 text-sm font-medium hover:bg-amber-300 transition-colors ${className}`}
+      title="Install App"
     >
       <Download className="w-4 h-4" />
-      <span className="hidden sm:inline">Install App</span>
+      <span>Install</span>
     </button>
   );
 }
