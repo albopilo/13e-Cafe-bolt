@@ -8,6 +8,7 @@ import { StatusBadge, PaymentStatusBadge } from '@/components/StatusBadge';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Calendar, Volume2, VolumeX, Phone, MessageCircle, Clock, Loader as Loader2, Coffee, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { usePushNotifications } from '@/lib/usePushNotifications';
+import { PwaInstallButton } from '@/components/PwaInstallButton';
 
 const ALL_LOCATIONS = ['Mille 1', 'Mille 2', 'Mille 3', 'Main Kitchen'];
 const FILTER_TABS = ['All', 'Incoming', 'Served', 'Cancelled'] as const;
@@ -209,6 +210,7 @@ export function StaffDashboard() {
                 <ShieldCheck className="w-4 h-4" /> Admin
               </button>
             )}
+            <PwaInstallButton />
             <button
               onClick={() => setAudioEnabled(!audioEnabled)}
               className="p-2 rounded-lg hover:bg-espresso-700 transition-colors"

@@ -50,7 +50,21 @@ export function usePushNotifications() {
       const unsub = onMessage(messaging, (payload) => {
         const title = payload.notification?.title || 'New Order';
         const body = payload.notification?.body || 'You have a new order';
-        if (Notification.permission === 'granted') {
+
+        if (Notification.permission === 'granted' && 'serviceWorker' in navigator) {
+          navigator.serviceWorker.ready.then((reg) => {
+            reg.showNotification(title, {
+              body,
+              icon: '/vite.svg',
+              badge: '/vite.svg',
+              tag: 'new-order',
+              requireInteraction: true,
+              data: { url: '/staff' },
+            });
+          }).catch(() => {
+            new Notification(title, { body, icon: '/vite.svg', tag: 'new-order' });
+          });
+        } else if (Notification.permission === 'granted') {
           new Notification(title, { body, icon: '/vite.svg', tag: 'new-order' });
         }
       });

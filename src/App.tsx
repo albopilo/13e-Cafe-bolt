@@ -12,7 +12,8 @@ import { LoginPage } from '@/pages/customer/LoginPage';
 import { ProfilePage } from '@/pages/customer/ProfilePage';
 import { StaffDashboard } from '@/pages/staff/StaffDashboard';
 import { AdminPanel } from '@/pages/admin/AdminPanel';
-import type { ReactNode } from 'react';
+import { isStaffPath } from '@/lib/usePwaInstall';
+import { useEffect, type ReactNode } from 'react';
 
 function AdminRoute({ children }: { children: ReactNode }) {
   const { session, isAdmin, isMainKitchen, loading } = useAuth();
@@ -60,8 +61,24 @@ function StaffRoute({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+function InstallPromptGuard() {
+  const location = useLocation();
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if (!isStaffPath(location.pathname)) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, [location.pathname]);
+  return null;
+}
+
 function AppRoutes() {
   return (
+    <>
+    <InstallPromptGuard />
     <Routes>
       <Route path="/" element={<MenuPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
@@ -82,6 +99,7 @@ function AppRoutes() {
       } />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </>
   );
 }
 
