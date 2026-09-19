@@ -7,7 +7,7 @@ import { useLang } from '@/context/LanguageContext';
 import type { RoomTable } from '@/lib/types';
 import { Plus, Trash2, Download, Printer, QrCode, Loader2, X, Pencil, FolderDown } from 'lucide-react';
 
-const BASE_URL = 'https://13ecafe.netlify.app';
+const BASE_URL = 'https://13e-menu.netlify.app';
 
 const COLORS = {
   espresso: '#3D2817',
